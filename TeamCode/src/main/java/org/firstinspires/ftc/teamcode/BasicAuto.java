@@ -29,8 +29,10 @@ public class BasicAuto extends LinearOpMode {
             "Blue hat","Red hat"
     };
 
-    private static final double midBoxRightBound = .6;
-    private static final double midBoxLeftBound = .3;
+    public int state = 1;
+
+
+    static final double webcamMidX = 1;
 
     @Override
     public void runOpMode() {
@@ -39,14 +41,26 @@ public class BasicAuto extends LinearOpMode {
 
         telemetryTfod();
 
+        robot.armLeft.setPwmDisable();
+        robot.armRight.setPwmDisable();
+        robot.wrist.setPosition(1);
+
         waitForStart();
         while(opModeIsActive()) {
 
 
             //detect objects in each section
-            if (objectPosition() == 1){
+            if (objectPosition() == 1 && state == 1){
                 robot.driveCurve(-1000, -2000, .5,1);
             }
+            else if(objectPosition() == 2 && state == 1){
+                robot.driveToPosition(0, -1000, 0, .5);
+            }
+            else if(state == 1){
+                robot.driveCurve(-2000,-1000,1,.5);
+            }
+
+
 
 
             //push pixel
@@ -95,10 +109,10 @@ public class BasicAuto extends LinearOpMode {
             objectX = x;
             objectY = y;
         }
-        if (objectX > midBoxLeftBound) {
+        if (objectX < webcamMidX ) {
             return 1;
         }
-        else if (objectX < midBoxRightBound) {
+        else if (objectX <= webcamMidX) {
             return 2;
         }
         else{

@@ -25,6 +25,15 @@ public class TeleOpLululu extends LinearOpMode{
         boolean lClawOpen = false;
         boolean prevBButtonState = false;
 
+        //controls
+        boolean upperClawButton = gamepad2.a;
+        boolean lowerClawButton = gamepad2.b;
+
+        boolean prevDButtonState = false;
+        boolean armEnabled = true;
+
+
+
 
         robot.init();
         
@@ -76,9 +85,36 @@ public class TeleOpLululu extends LinearOpMode{
             prevBButtonState = gamepad2.b;
             robot.openLowerClaw(lClawOpen);
 
-            robot.setArmPosition(-gamepad2.left_stick_y);
+            //idk if this toggle code works lmao
+//            if(gamepad2.dpad_down && !prevDButtonState){
+//                armEnabled = !armEnabled;
+//            }
+//            prevDButtonState = gamepad2.dpad_down;
+//
+            if(gamepad2.dpad_down){
+                armEnabled = false;
+            }
+            else{
+                armEnabled = true;
+            }
 
 
+            //holding left bumper puts arm and claw in pixel scoring position
+            //holding dpad down disables arm (for use when arm is in down position)
+            if(armEnabled) {
+                robot.enableArm();
+                if (gamepad2.left_bumper) {
+                    robot.setArmPosition(0);
+                    robot.wrist.setPosition(.8);
+                } else {
+                    robot.setArmPosition(1);
+                    robot.wrist.setPosition(0.9);
+                }
+            }
+            else{
+                robot.disableArm();
+            }
+            robot.setLiftPower((gamepad2.left_stick_y/2) + 0.05);
 
             telemetry.addData("Robot Angle (fs)", angle);
             telemetry.update();

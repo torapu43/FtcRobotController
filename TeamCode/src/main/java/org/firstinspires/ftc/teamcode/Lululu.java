@@ -38,6 +38,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -79,7 +80,7 @@ public class Lululu {
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     private DcMotorEx fl, fr, bl, br, slideLeft, slideRight   = null;
-    public Servo armRight, armLeft, wrist, lowerClaw, upperClaw;
+    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw;
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private TfodProcessor tfod;
@@ -98,6 +99,8 @@ public class Lululu {
     static final double upperClawClosed = 0;
     static final double lowerClawOpen = 0;
     static final double lowerClawClosed = .37;
+
+
 
     
 
@@ -125,11 +128,11 @@ public class Lululu {
         slideRight  = myOpMode.hardwareMap.get(DcMotorEx.class, "slideRight");
 
 
-        upperClaw   = myOpMode.hardwareMap.get(Servo.class, "upperClaw");
-        lowerClaw   = myOpMode.hardwareMap.get(Servo.class, "lowerClaw");
-        armRight    = myOpMode.hardwareMap.get(Servo.class, "armRight");
-        armLeft     = myOpMode.hardwareMap.get(Servo.class, "armLeft");
-        wrist = myOpMode.hardwareMap.get(Servo.class, "wrist");
+        upperClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "upperClaw");
+        lowerClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "lowerClaw");
+        armRight    = myOpMode.hardwareMap.get(ServoImplEx.class, "armRight");
+        armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
+        wrist = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
 
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
@@ -265,7 +268,18 @@ public class Lululu {
         }
     }
 
-    public void testServo(Servo servo, double position){
+    public void disableArm(){
+        armRight.setPwmDisable();
+        armLeft.setPwmDisable();
+    }
+
+    public void enableArm(){
+        armRight.setPwmEnable();
+        armLeft.setPwmEnable();
+    }
+
+
+    public void testServo(ServoImplEx servo, double position){
         servo.setPosition(position);
     }
 
