@@ -32,6 +32,9 @@ public class TeleOpLululu extends LinearOpMode{
         boolean prevDButtonState = false;
         boolean armEnabled = true;
 
+        double wristFlatPosition = 0.9;
+        double wristScorePosition = 0.8;
+
 
 
 
@@ -47,8 +50,9 @@ public class TeleOpLululu extends LinearOpMode{
 
             angle   = robot.getYaw();
 
-            if(gamepad1.left_bumper)
+            if(gamepad1.right_trigger != 0) {
                 speed = .3;
+            }
             else if(gamepad1.right_bumper)
                 speed = .7;
             else
@@ -105,16 +109,23 @@ public class TeleOpLululu extends LinearOpMode{
                 robot.enableArm();
                 if (gamepad2.left_bumper) {
                     robot.setArmPosition(0);
-                    robot.wrist.setPosition(.8);
+                    robot.wrist.setPosition(wristScorePosition);
                 } else {
                     robot.setArmPosition(1);
-                    robot.wrist.setPosition(0.9);
+
+                    if(gamepad2.dpad_up){
+                        robot.wrist.setPosition(1- (-gamepad2.right_stick_y));
+                    }
+                    robot.wrist.setPosition(wristFlatPosition);
+
+
+
                 }
             }
             else{
                 robot.disableArm();
             }
-            robot.setLiftPower((gamepad2.left_stick_y/2) + 0.05);
+            robot.setLiftPower((gamepad2.left_stick_y/2));
 
             telemetry.addData("Robot Angle (fs)", angle);
             telemetry.update();

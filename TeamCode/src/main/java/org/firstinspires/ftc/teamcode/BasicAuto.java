@@ -23,7 +23,7 @@ public class BasicAuto extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "model_20231026_112508.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20231030_161131.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
             "Blue hat","Red hat"
@@ -44,21 +44,32 @@ public class BasicAuto extends LinearOpMode {
         robot.armLeft.setPwmDisable();
         robot.armRight.setPwmDisable();
         robot.wrist.setPosition(1);
+        robot.openLowerClaw(false);
+        robot.openUpperClaw(false);
 
         waitForStart();
         while(opModeIsActive()) {
 
-
+        telemetryTfod();
             //detect objects in each section
-            if (objectPosition() == 1 && state == 1){
-                robot.driveCurve(-1000, -2000, .5,1);
-            }
-            else if(objectPosition() == 2 && state == 1){
-                robot.driveToPosition(0, -1000, 0, .5);
-            }
-            else if(state == 1){
-                robot.driveCurve(-2000,-1000,1,.5);
-            }
+//            if (objectPosition() == 1 && state == 1){
+//                robot.driveCurve(-1000, -2000, .5,1);
+//                if(!robot.isBusy()){
+//                    state = 2;
+//                }
+//            }
+//            else if(objectPosition() == 2 && state == 1){
+//                robot.driveToPosition(0, -1000, 0, .5);
+//                if(!robot.isBusy()){
+//                    state = 2;
+//                }
+//            }
+//            else if(state == 1){
+//                robot.driveCurve(-2000,-1000,1,.5);
+//                if(!robot.isBusy()){
+//                    state = 2;
+//                }
+//            }
 
 
 
@@ -81,12 +92,17 @@ public class BasicAuto extends LinearOpMode {
         robot.driveToPosition(fwd,strafe,0,power);
 
         //if the robot is no longer moving, return true
-        return !robot.isBusy();
+        if(!robot.isBusy()){
+            state ++;
+            return true;
+        }
+
+        return false;
 
     }
 
 //    private boolean driveCurved()
-//    {
+//    {-
 //
 //        robot.driveCurve()
 //    }
