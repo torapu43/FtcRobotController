@@ -11,6 +11,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
 
 import java.util.List;
+import java.util.Timer;
 
 @Autonomous
 public class BasicAuto extends LinearOpMode {
@@ -23,42 +24,70 @@ public class BasicAuto extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "model_20231026_112508.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20231121_000004.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
             "Blue hat","Red hat"
     };
 
-    public int state = 1;
+    public int state = 0;
+    private int objectPos = 3;
+    private Timer timer = new Timer();
 
 
-    static final double webcamMidX = 1;
+    static final double webcamMidX = 300;
 
     @Override
     public void runOpMode() {
         robot.init();
         initDoubleVision();
 
-        telemetryTfod();
+        objectPos = objectPosition();
 
         robot.armLeft.setPwmDisable();
         robot.armRight.setPwmDisable();
-        robot.wrist.setPosition(1);
+        robot.wrist.setPosition(0);
 
         waitForStart();
         while(opModeIsActive()) {
 
+            if(state == 0) {
+                robot.driveToPosition(1000, 1000, 0);
+                state = 1;
+            }
 
-            //detect objects in each section
-            if (objectPosition() == 1 && state == 1){
-                robot.driveCurve(-1000, -2000, .5,1);
+            telemetry.addData("object position:",objectPosition());
+            telemetry.addData("timer",getRuntime());
+            objectPos = objectPosition();
+
+            telemetry.update();
+
+            if(objectPosition() != 3 || getRuntime() > 10){
+                state = 1;
             }
-            else if(objectPosition() == 2 && state == 1){
-                robot.driveToPosition(0, -1000, 0, .5);
+
+            if (state == 1) {
+                if(objectPos == 1){
+
+                }
+                if(objectPos == 2){
+
+                }
+                else{
+
+                }
             }
-            else if(state == 1){
-                robot.driveCurve(-2000,-1000,1,.5);
-            }
+//
+//            //detect objects in each section
+//            if (objectPosition() == 1 && state == 1){
+//                robot.driveCurve(-1000, -2000, .5,1);
+//            }
+//            else if(objectPosition() == 2 && state == 1){
+//                robot.driveToPosition(0, -1000, 0, .5);
+//            }
+//            else if(state == 1){
+//                robot.driveCurve(-2000,-1000,1,.5);
+//            }
 
 
 
@@ -95,8 +124,8 @@ public class BasicAuto extends LinearOpMode {
 
         List<Recognition> currentRecognitions = tfod.getRecognitions();
         telemetry.addData("# Objects Detected", currentRecognitions.size());
-        double objectX = 0;
-        double objectY = 0;
+        double objectX = -1000;
+        double objectY = -1000;
 
         // Step through the list of recognitions and display info for each one.
         for (Recognition recognition : currentRecognitions) {
@@ -108,11 +137,14 @@ public class BasicAuto extends LinearOpMode {
 
             objectX = x;
             objectY = y;
+
+            telemetry.addData("X coord", objectX);
+
         }
-        if (objectX < webcamMidX ) {
+        if (objectX > webcamMidX ) {
             return 1;
         }
-        else if (objectX <= webcamMidX) {
+        else if (objectX <= webcamMidX && objectX != -1000) {
             return 2;
         }
         else{
@@ -163,6 +195,13 @@ public class BasicAuto extends LinearOpMode {
             telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
             telemetry.addData("- Position", "%.0f / %.0f", x, y);
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            if(x > 300){
+                telemetry.addData("Position:", "Right side");
+            }
+            else {
+                telemetry.addData("Position:", "Left side");
+            }
+            telemetry.update();
         }   // end for() loop
 
     }   // end method telemetryTfod()

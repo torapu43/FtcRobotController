@@ -11,112 +11,126 @@ public class TeleOpLululu extends LinearOpMode{
     
     @Override
     public void runOpMode() {
-        
+
         double drive;
         double strafe;
         double turn;
         double speed;
         double angle;
-        boolean fieldCentric = true;
+        boolean fieldCentric = false;
 
         boolean uClawOpen = false;
-        boolean prevAButtonState = false;
+        boolean prevYButtonState = false;
 
         boolean lClawOpen = false;
-        boolean prevBButtonState = false;
+        boolean prevAButtonState = false;
 
         //controls
         boolean upperClawButton = gamepad2.a;
         boolean lowerClawButton = gamepad2.b;
 
         boolean prevDButtonState = false;
+        boolean prevBumperState = false;
+        boolean scoringPosition = false;
+
         boolean armEnabled = true;
 
 
-
-
         robot.init();
-        
-        
+
+
         waitForStart();
-        
-        while (opModeIsActive()){
-            drive   = -gamepad1.left_stick_y;
-            strafe  = gamepad1.left_stick_x;
-            turn    = gamepad1.right_stick_x;
 
-            angle   = robot.getYaw();
+        while (opModeIsActive()) {
+            drive = -gamepad1.left_stick_y;
+            strafe = gamepad1.left_stick_x;
+            turn = gamepad1.right_stick_x;
 
-            if(gamepad1.left_bumper)
+            angle = robot.getYaw();
+
+            if (gamepad1.left_bumper)
                 speed = .3;
-            else if(gamepad1.right_bumper)
+            else if (gamepad1.right_bumper)
                 speed = .7;
             else
                 speed = .5;
 
-            if(gamepad1.dpad_up){
+            if (gamepad1.dpad_up) {
                 fieldCentric = !fieldCentric;
             }
 
-            if(fieldCentric) {
+            if (fieldCentric) {
                 robot.driveFieldCentric(drive, strafe, turn, speed);
-            }
-            else{
-                robot.driveByPower(drive,strafe,turn,speed);
+            } else {
+                robot.driveByPower(drive, strafe, turn, speed);
             }
 
-            if (gamepad1.dpad_down){
+            if (gamepad1.dpad_down) {
                 robot.resetImu();
             }
 
             robot.setLiftPower(gamepad2.left_stick_y);
 
             //if a is pressed and it was not pressed last loop, toggle claw
-            if(gamepad2.a && !prevAButtonState){
+            if (gamepad2.y && !prevYButtonState) {
                 uClawOpen = !uClawOpen;
             }
-            prevAButtonState = gamepad2.a;
+            prevYButtonState = gamepad2.y;
             robot.openUpperClaw(uClawOpen);
 
             //same but for the other claw
-            if(gamepad2.b && !prevBButtonState){
+            if (gamepad2.a && !prevAButtonState) {
                 lClawOpen = !lClawOpen;
             }
-            prevBButtonState = gamepad2.b;
+            prevAButtonState = gamepad2.a;
             robot.openLowerClaw(lClawOpen);
 
             //idk if this toggle code works lmao
-//            if(gamepad2.dpad_down && !prevDButtonState){
-//                armEnabled = !armEnabled;
-//            }
-//            prevDButtonState = gamepad2.dpad_down;
-//
-            if(gamepad2.dpad_down){
-                armEnabled = false;
+            if (gamepad2.dpad_down && !prevDButtonState) {
+                armEnabled = !armEnabled;
             }
-            else{
+            prevDButtonState = gamepad2.dpad_down;
+
+            if(gamepad2.left_stick_y != 0){
                 armEnabled = true;
             }
 
 
             //holding left bumper puts arm and claw in pixel scoring position
             //holding dpad down disables arm (for use when arm is in down position)
-            if(armEnabled) {
+            if (armEnabled) {
                 robot.enableArm();
-                if (gamepad2.left_bumper) {
-                    robot.setArmPosition(0);
-                    robot.wrist.setPosition(.8);
+                if(gamepad2.left_bumper && !prevBumperState){
+                    scoringPosition = !scoringPosition;
+                    uClawOpen = false;
+                    lClawOpen = false;
+                }
+                if (scoringPosition) {
+                    robot.setArmPosition(0.4);
+                    robot.wrist.setPosition(0.5);
                 } else {
                     robot.setArmPosition(1);
-                    robot.wrist.setPosition(0.9);
+                    robot.wrist.setPosition(0.32);
+
+                }
+                prevBumperState = gamepad2.left_bumper;
+            } else {
+                robot.disableArm();
+
+                if (gamepad2.b) {
+                    robot.wrist.setPosition(0);
+                }
+                else{
+                    robot.wrist.setPosition(.32);
                 }
             }
-            else{
-                robot.disableArm();
-            }
-            robot.setLiftPower((gamepad2.left_stick_y/2) + 0.05);
+            robot.setLiftPower((gamepad2.left_stick_y / 2));
 
             telemetry.addData("Robot Angle (fs)", angle);
+            telemetry.addData("left encoder", robot.getLeft());
+            telemetry.addData("right encoder", robot.getRight());
+            telemetry.addData("back encoder", robot.getBack());
+
             telemetry.update();
         }
     }

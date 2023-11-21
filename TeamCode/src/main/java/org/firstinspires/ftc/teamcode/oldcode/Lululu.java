@@ -44,6 +44,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
@@ -85,6 +86,8 @@ public class Lululu {
     private AprilTagProcessor aprilTag;
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
+
+    private Encoder left, right, back;
 
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
@@ -134,11 +137,14 @@ public class Lululu {
         armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
         wrist = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
 
+        left        = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fl"));
+        right       = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fr"));
+        back        = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "bl"));
 
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
-        fr.setDirection(DcMotor.Direction.FORWARD);
+        fr.setDirection(DcMotor.Direction.REVERSE);
         fl.setDirection(DcMotor.Direction.FORWARD);
         br.setDirection(DcMotor.Direction.FORWARD);
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -149,6 +155,8 @@ public class Lululu {
         fr.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        left.setDirection(Encoder.Direction.REVERSE);
 
 
         imu         = myOpMode.hardwareMap.get(IMU.class, "imu");
@@ -166,8 +174,8 @@ public class Lululu {
         imu.initialize(
                 new IMU.Parameters(
                     new RevHubOrientationOnRobot(
-                        RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                        RevHubOrientationOnRobot.UsbFacingDirection.FORWARD
+                        RevHubOrientationOnRobot.LogoFacingDirection.BACKWARD,
+                        RevHubOrientationOnRobot.UsbFacingDirection.UP
                     )
                 )
         );
@@ -232,6 +240,10 @@ public class Lululu {
     public void setArmPosition(double position){
         armRight.setPosition(position);
         armLeft.setPosition(1 - position);
+    }
+
+    public void setMotorPower(double power, DcMotorEx motor){
+        motor.setPower(power);
     }
 
     public void setLiftPosition(int position, double power){
@@ -387,6 +399,44 @@ public class Lululu {
 
         double output = orientation.getYaw(AngleUnit.RADIANS);
         return output;
+    }
+
+    public int getLeft(){
+        return left.getCurrentPosition();
+    }
+    public int getRight(){
+        return right.getCurrentPosition();
+    }
+    public int getBack(){
+        return back.getCurrentPosition();
+    }
+
+    public void driveToPosition(int left, int right, int back){
+        double kp = 0.0007;
+
+        int leftOffset = getLeft();
+        int rightOffset = getRight();
+        int backOffset = getBack();
+
+
+        while(fl.isBusy() && fr.isBusy() && bl.isBusy() && br.isBusy()) {
+            int currLeft = getLeft() - leftOffset;
+            int currRight = getRight() - rightOffset;
+            int currBack = getBack() - backOffset;
+
+            int leftError = left - currLeft ;
+            int rightError = right - currRight;
+            int backError = back - currBack;
+
+            fl.setPower(kp*leftError);
+            fr.setPower(kp*rightError);
+            bl.setPower(kp*leftError);
+            br.setPower(kp*rightError);
+//
+//            telemetry.addData("left error:" , leftError);
+//            telemetry.addData("right error", rightError);
+        }
+
     }
 
 }

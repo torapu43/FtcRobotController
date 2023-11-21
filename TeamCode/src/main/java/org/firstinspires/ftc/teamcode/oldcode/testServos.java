@@ -20,6 +20,10 @@ public class testServos extends LinearOpMode {
 
         waitForStart();
         while(opModeIsActive()){
+
+        robot.setArmPosition(1- gamepad1.left_trigger);
+        telemetry.addData("arm position", 1 - gamepad1.left_trigger);
+        telemetry.update();
 //            robot.openLowerClaw(gamepad1.b);
 //            robot.openUpperClaw(gamepad1.a);
 //
@@ -39,30 +43,30 @@ public class testServos extends LinearOpMode {
             //hori = .9
             //-60 deg = .8
 
-            if(gamepad2.a && !prevAButtonState){
-                uClawOpen = !uClawOpen;
-            }
-            prevAButtonState = gamepad2.a;
-            robot.openUpperClaw(uClawOpen);
-
-
-
-            if (gamepad1.right_bumper) {
-                        robot.wrist.setPosition(1);
-                    }
-                    else if (gamepad1.left_bumper) {
-                    robot.wrist.setPosition(.8);
-                    }
-
-
-
-
-            robot.setLiftPower(gamepad1.right_stick_y/2);
-
-            robot.setArmPosition(1- gamepad1.right_trigger);
-
-            robot.openUpperClaw(gamepad1.a);
-            robot.openLowerClaw(gamepad1.b);
+//            if(gamepad2.a && !prevAButtonState){
+//                uClawOpen = !uClawOpen;
+//            }
+//            prevAButtonState = gamepad2.a;
+//            robot.openUpperClaw(uClawOpen);
+//
+//
+//
+//            if (gamepad1.right_bumper) {
+//                        robot.wrist.setPosition(1);
+//                    }
+//                    else if (gamepad1.left_bumper) {
+//                    robot.wrist.setPosition(.8);
+//                    }
+//
+//
+//
+//
+//            robot.setLiftPower(gamepad1.right_stick_y/2);
+//
+//            robot.setArmPosition(1- gamepad1.right_trigger);
+//
+//            robot.openUpperClaw(gamepad1.a);
+//            robot.openLowerClaw(gamepad1.b);
 
 
         }
