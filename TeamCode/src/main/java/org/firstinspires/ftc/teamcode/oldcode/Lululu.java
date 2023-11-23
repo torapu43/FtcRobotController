@@ -80,7 +80,7 @@ public class Lululu {
 
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotorEx fl, fr, bl, br, slideLeft, slideRight   = null;
+    private DcMotorEx fl, fr, bl, br, slideLeft, slideRight, climb   = null;
     public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw;
     private IMU imu;
     private AprilTagProcessor aprilTag;
@@ -101,7 +101,7 @@ public class Lululu {
     static final double upperClawOpen = 0.3;
     static final double upperClawClosed = 0;
     static final double lowerClawOpen = 0;
-    static final double lowerClawClosed = .37;
+    static final double lowerClawClosed = .4;
 
 
 
@@ -129,13 +129,14 @@ public class Lululu {
         br          = myOpMode.hardwareMap.get(DcMotorEx.class, "br");
         slideLeft   = myOpMode.hardwareMap.get(DcMotorEx.class, "slideLeft");
         slideRight  = myOpMode.hardwareMap.get(DcMotorEx.class, "slideRight");
+        climb       = myOpMode.hardwareMap.get(DcMotorEx.class, "climb");
 
 
         upperClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "upperClaw");
         lowerClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "lowerClaw");
         armRight    = myOpMode.hardwareMap.get(ServoImplEx.class, "armRight");
         armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
-        wrist = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
+        wrist       = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
 
         left        = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fl"));
         right       = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fr"));
@@ -242,9 +243,16 @@ public class Lululu {
         armLeft.setPosition(1 - position);
     }
 
+    public void setClimbPower(double power){
+        climb.setPower(power);
+    }
+
     public void setMotorPower(double power, DcMotorEx motor){
+
         motor.setPower(power);
     }
+
+
 
     public void setLiftPosition(int position, double power){
         slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -398,7 +406,7 @@ public class Lululu {
         orientation = imu.getRobotYawPitchRollAngles();
 
         double output = orientation.getYaw(AngleUnit.RADIANS);
-        return output;
+        return output + Math.PI;
     }
 
     public int getLeft(){
@@ -438,5 +446,6 @@ public class Lululu {
         }
 
     }
+
 
 }
