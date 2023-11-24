@@ -29,9 +29,12 @@ public class TeleOpLululu extends LinearOpMode{
         boolean upperClawButton = gamepad2.a;
         boolean lowerClawButton = gamepad2.b;
 
+
+
         boolean prevDButtonState = false;
         boolean prevBumperState = false;
         boolean scoringPosition = false;
+        boolean prevDupButtonState = false;
 
         boolean armEnabled = false;
 
@@ -55,9 +58,12 @@ public class TeleOpLululu extends LinearOpMode{
             else
                 speed = .5;
 
-            if (gamepad1.dpad_up) {
+
+            if (gamepad1.dpad_up && !prevDupButtonState) {
                 fieldCentric = !fieldCentric;
             }
+            prevDupButtonState = gamepad1.dpad_up;
+
 
             if (fieldCentric) {
                 robot.driveFieldCentric(drive, strafe, turn, speed);
@@ -85,7 +91,7 @@ public class TeleOpLululu extends LinearOpMode{
             prevAButtonState = gamepad2.a;
             robot.openLowerClaw(lClawOpen);
 
-            //idk if this toggle code works lmao
+            //toggle whether the arm is disabled when dpad down is pressed
             if (gamepad2.dpad_down && !prevDButtonState) {
                 armEnabled = !armEnabled;
             }
@@ -114,10 +120,12 @@ public class TeleOpLululu extends LinearOpMode{
 
                 }
                 prevBumperState = gamepad2.left_bumper;
-            } else {
+            }
+
+            else {
                 robot.disableArm();
 
-                if (gamepad2.b) {
+                if (gamepad2.b || (!uClawOpen && !lClawOpen)){
                     robot.wrist.setPosition(0);
                 }
                 else{

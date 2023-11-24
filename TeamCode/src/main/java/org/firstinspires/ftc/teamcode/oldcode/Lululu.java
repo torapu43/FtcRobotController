@@ -181,6 +181,10 @@ public class Lululu {
                 )
         );
 
+        disableArm();
+        openLowerClaw(false);
+        openUpperClaw(false);
+
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
@@ -209,23 +213,6 @@ public class Lululu {
 
     }
 
-    public void driveCurve(int leftTarget, int rightTarget, double leftPower, double rightPower){
-        fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        fl.setTargetPosition(leftTarget);
-        fr.setTargetPosition(rightTarget);
-        bl.setTargetPosition(leftTarget);
-        br.setTargetPosition(rightTarget);
-
-        fl.setPower(leftPower);
-        fr.setPower(rightPower);
-        bl.setPower(leftPower);
-        br.setPower(rightPower);
-
-    }
 
     public boolean isBusy(){
         return fl.isBusy() || fr.isBusy() || bl.isBusy() || br.isBusy();
@@ -241,6 +228,22 @@ public class Lululu {
     public void setArmPosition(double position){
         armRight.setPosition(position);
         armLeft.setPosition(1 - position);
+    }
+
+    public double getArmPosition(){
+        return armRight.getPosition();
+    }
+
+    public void moveArm(boolean isOut){
+        if(!isOut){
+            setArmPosition(0.5);
+            openUpperClaw(false);
+            openLowerClaw(false);
+        }
+        else{
+            setArmPosition(1);
+        }
+
     }
 
     public void setClimbPower(double power){

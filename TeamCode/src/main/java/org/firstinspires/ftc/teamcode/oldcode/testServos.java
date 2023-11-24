@@ -21,9 +21,14 @@ public class testServos extends LinearOpMode {
         waitForStart();
         while(opModeIsActive()){
 
-        robot.setArmPosition(1- gamepad1.left_trigger);
-        telemetry.addData("arm position", 1 - gamepad1.left_trigger);
-        telemetry.update();
+            robot.setArmPosition(gamepad1.left_trigger);
+            robot.wrist.setPosition(gamepad1.right_trigger);
+
+            telemetry.addData("wrist position:", robot.wrist.getPosition());
+            telemetry.addData("arm position:", robot.getArmPosition());
+//        robot.setArmPosition(1- gamepad1.left_trigger);
+//        telemetry.addData("arm position", 1 - gamepad1.left_trigger);
+            telemetry.update();
 //            robot.openLowerClaw(gamepad1.b);
 //            robot.openUpperClaw(gamepad1.a);
 //
