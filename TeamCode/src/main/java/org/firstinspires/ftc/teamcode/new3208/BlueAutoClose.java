@@ -46,12 +46,12 @@ public class BlueAutoClose extends LinearOpMode {
 
 
 
-        Pose2d startPos = new Pose2d(0,0,Math.toRadians(180));
+        Pose2d startPos = new Pose2d(16.875, 64.4375, 90);
 
         drive.setPoseEstimate(startPos);
 
         Trajectory toRight = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(20,-13),Math.toRadians(-40))
+                .splineTo(new Vector2d(5,30),Math.toRadians(210))
                 .build();
 
         Trajectory outRight = drive.trajectoryBuilder(toRight.end())
@@ -60,7 +60,7 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory scoreRight = drive.trajectoryBuilder(outRight.end())
-                .lineToLinearHeading(new Pose2d(28,28,Math.toRadians(-90)))
+                .lineToLinearHeading(new Pose2d(48,30,Math.toRadians(180)))
                 .build();
 
         telemetry.addData("Ready for W", "");
