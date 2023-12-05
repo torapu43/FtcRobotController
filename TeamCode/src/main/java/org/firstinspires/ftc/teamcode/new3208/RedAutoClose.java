@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Timer;
 
 @Autonomous
-public class BlueAutoClose extends LinearOpMode {
+public class RedAutoClose extends LinearOpMode {
 
 
 
@@ -45,58 +45,58 @@ public class BlueAutoClose extends LinearOpMode {
         SampleMecanumDrive  drive = new SampleMecanumDrive(hardwareMap);
         Lululu              robot = new Lululu(this);
 
-        Pose2d startPos = new Pose2d(-31.125, 64.4375, Math.toRadians(90));
+        Pose2d startPos = new Pose2d(16.875, -64.4375, Math.toRadians(-90));
 
         drive.setPoseEstimate(startPos);
 
-        Trajectory toRight = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(12,40),Math.toRadians(90),
+        Trajectory toLeft = drive.trajectoryBuilder(startPos,true)
+                .splineTo(new Vector2d(12,-40),Math.toRadians(-90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineTo(new Vector2d(4,45),Math.toRadians(110),
+                .splineTo(new Vector2d(4,-45),Math.toRadians(-110),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory outRight = drive.trajectoryBuilder(toRight.end(),false)
+        Trajectory outLeft = drive.trajectoryBuilder(toLeft.end(),false)
                 .forward(6)
                 .build();
 
-        Trajectory scoreRight = drive.trajectoryBuilder(outRight.end(),false)
-                .lineToLinearHeading(new Pose2d(53,32,Math.toRadians(180)))
+        Trajectory scoreLeft = drive.trajectoryBuilder(outLeft.end(),false)
+                .lineToLinearHeading(new Pose2d(53,-32,Math.toRadians(-180)))
                 .build();
 
         Trajectory toMiddle = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(12,34),Math.toRadians(-90),
+                .splineTo(new Vector2d(12,-34),Math.toRadians(90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         Trajectory outMiddle = drive.trajectoryBuilder(toMiddle.end())
-                .splineToConstantHeading(new Vector2d(15,45),Math.toRadians(110))
+                .splineToConstantHeading(new Vector2d(15,-45),Math.toRadians(-110))
                 .build();
 
         Trajectory scoreMiddle = drive.trajectoryBuilder(outMiddle.end(),true)
-                .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(53,-38,Math.toRadians(-180)))
                 .build();
 
-        Trajectory toLeft = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(23,40),Math.toRadians(-90),
+        Trajectory toRight = drive.trajectoryBuilder(startPos,true)
+                .splineTo(new Vector2d(23,-40),Math.toRadians(90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory outLeft = drive.trajectoryBuilder(toLeft.end())
-                .splineTo(new Vector2d(15,55),Math.toRadians(120))
+        Trajectory outRight = drive.trajectoryBuilder(toRight.end())
+                .splineTo(new Vector2d(15,-55),Math.toRadians(-120))
                 .build();
 
-        Trajectory scoreLeft = drive.trajectoryBuilder(outLeft.end(),true)
-                .lineToLinearHeading(new Pose2d(53,44,Math.toRadians(180)))
+        Trajectory scoreRight = drive.trajectoryBuilder(outRight.end(),true)
+                .lineToLinearHeading(new Pose2d(53,-44,Math.toRadians(-180)))
                 .build();
 
-        Trajectory parkRight = drive.trajectoryBuilder((scoreLeft.end()),true)
-                .lineToConstantHeading(new Vector2d(53,64))
-                .build();
+        Trajectory parkRight = drive.trajectoryBuilder((scoreRight.end()),true)
+                .lineToConstantHeading(new Vector2d(53,-64))
+                        .build();
 
         robot.init();
 

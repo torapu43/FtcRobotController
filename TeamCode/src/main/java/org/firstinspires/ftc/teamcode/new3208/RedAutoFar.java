@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.new3208;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.oldcode.Lululu;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import org.firstinspires.ftc.vision.tfod.TfodProcessor;
@@ -20,7 +22,7 @@ import java.util.List;
 import java.util.Timer;
 
 @Autonomous
-public class BlueAutoClose extends LinearOpMode {
+public class RedAutoFar extends LinearOpMode {
 
 
 
@@ -45,56 +47,25 @@ public class BlueAutoClose extends LinearOpMode {
         SampleMecanumDrive  drive = new SampleMecanumDrive(hardwareMap);
         Lululu              robot = new Lululu(this);
 
-        Pose2d startPos = new Pose2d(-31.125, 64.4375, Math.toRadians(90));
+        Pose2d startPos = new Pose2d(-31.125, -64.4375, Math.toRadians(-90));
 
         drive.setPoseEstimate(startPos);
 
-        Trajectory toRight = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(12,40),Math.toRadians(90),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineTo(new Vector2d(4,45),Math.toRadians(110),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        Trajectory outRight = drive.trajectoryBuilder(toRight.end(),false)
-                .forward(6)
-                .build();
-
-        Trajectory scoreRight = drive.trajectoryBuilder(outRight.end(),false)
-                .lineToLinearHeading(new Pose2d(53,32,Math.toRadians(180)))
-                .build();
-
-        Trajectory toMiddle = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(12,34),Math.toRadians(-90),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
-
-        Trajectory outMiddle = drive.trajectoryBuilder(toMiddle.end())
-                .splineToConstantHeading(new Vector2d(15,45),Math.toRadians(110))
-                .build();
-
-        Trajectory scoreMiddle = drive.trajectoryBuilder(outMiddle.end(),true)
-                .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
-                .build();
-
-        Trajectory toLeft = drive.trajectoryBuilder(startPos,true)
+        Trajectory traj1 = drive.trajectoryBuilder(startPos,true)
                 .splineTo(new Vector2d(23,40),Math.toRadians(-90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory outLeft = drive.trajectoryBuilder(toLeft.end())
+        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
                 .splineTo(new Vector2d(15,55),Math.toRadians(120))
                 .build();
 
-        Trajectory scoreLeft = drive.trajectoryBuilder(outLeft.end(),true)
+        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
                 .lineToLinearHeading(new Pose2d(53,44,Math.toRadians(180)))
                 .build();
 
-        Trajectory parkRight = drive.trajectoryBuilder((scoreLeft.end()),true)
+        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
                 .lineToConstantHeading(new Vector2d(53,64))
                 .build();
 
@@ -106,17 +77,18 @@ public class BlueAutoClose extends LinearOpMode {
 
 
         waitForStart();
+        drive.followTrajectory(traj1);
+        drive.followTrajectory(traj2);
+        drive.followTrajectory(traj3);
+        drive.followTrajectory(traj4);
 
-        drive.followTrajectory(toRight);
-        drive.followTrajectory(outRight);
-        drive.followTrajectory(scoreRight);
+
 //        robot.setLiftPosition(5000,.3);
 //        robot.toScoringPosition();
 //        robot.openLowerClaw(true);
 //        robot.openLowerClaw(false);
 //        robot.neutralPosition();
 //        robot.setLiftPosition(0,.3);
-        drive.followTrajectory(parkRight);
 
 
 //        if(objectPos == 1){

@@ -109,19 +109,18 @@ public class TeleOpLululu extends LinearOpMode{
                 if(gamepad2.left_bumper && !prevBumperState){
                     scoringPosition = !scoringPosition;
                     uClawOpen = false;
+
+
                     lClawOpen = false;
                 }
                 if (scoringPosition) {
-                    robot.setArmPosition(0.5);
-                    robot.wrist.setPosition(0.5);
+                    robot.toScoringPosition();
                 } else {
-                    robot.setArmPosition(1);
-                    robot.wrist.setPosition(0.32);
+                    robot.neutralPosition();
 
                 }
                 prevBumperState = gamepad2.left_bumper;
             }
-
             else {
                 robot.disableArm();
 
@@ -129,16 +128,11 @@ public class TeleOpLululu extends LinearOpMode{
                     robot.wrist.setPosition(0);
                 }
                 else{
-                    robot.wrist.setPosition(.32);
+                    robot.wrist.setPosition(.35);
                 }
             }
             robot.setLiftPower((gamepad2.left_stick_y / 2));
             robot.setClimbPower(gamepad1.right_trigger - gamepad1.left_trigger);
-
-            telemetry.addData("Robot Angle (fs)", angle);
-            telemetry.addData("left encoder", robot.getLeft());
-            telemetry.addData("right encoder", robot.getRight());
-            telemetry.addData("back encoder", robot.getBack());
 
             telemetry.update();
         }

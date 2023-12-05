@@ -184,6 +184,7 @@ public class Lululu {
         disableArm();
         openLowerClaw(false);
         openUpperClaw(false);
+        wrist.setPosition(0);
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
@@ -404,50 +405,22 @@ public class Lululu {
 
     }
 
+    public void toScoringPosition(){
+        setArmPosition(.5);
+        wrist.setPosition(.5);
+    }
+
+    public void neutralPosition(){
+        setArmPosition(0);
+        wrist.setPosition(0.35);
+    }
+
     public double getYaw(){
         YawPitchRollAngles orientation;
         orientation = imu.getRobotYawPitchRollAngles();
 
         double output = orientation.getYaw(AngleUnit.RADIANS);
         return output + Math.PI;
-    }
-
-    public int getLeft(){
-        return left.getCurrentPosition();
-    }
-    public int getRight(){
-        return right.getCurrentPosition();
-    }
-    public int getBack(){
-        return back.getCurrentPosition();
-    }
-
-    public void driveToPosition(int left, int right, int back){
-        double kp = 0.0007;
-
-        int leftOffset = getLeft();
-        int rightOffset = getRight();
-        int backOffset = getBack();
-
-
-        while(fl.isBusy() && fr.isBusy() && bl.isBusy() && br.isBusy()) {
-            int currLeft = getLeft() - leftOffset;
-            int currRight = getRight() - rightOffset;
-            int currBack = getBack() - backOffset;
-
-            int leftError = left - currLeft ;
-            int rightError = right - currRight;
-            int backError = back - currBack;
-
-            fl.setPower(kp*leftError);
-            fr.setPower(kp*rightError);
-            bl.setPower(kp*leftError);
-            br.setPower(kp*rightError);
-//
-//            telemetry.addData("left error:" , leftError);
-//            telemetry.addData("right error", rightError);
-        }
-
     }
 
 
