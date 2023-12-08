@@ -79,7 +79,7 @@ public class BlueAutoClose extends LinearOpMode {
         Trajectory scoreMiddle = drive.trajectoryBuilder(outMiddle.end(),true)
                 .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
                 .addDisplacementMarker(() ->{
-                    score();
+                    scorePixel();
                 })
 
 
@@ -100,9 +100,6 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory park = drive.trajectoryBuilder((drive.getPoseEstimate()),true)
-                .addDisplacementMarker(() ->{
-                    returnLift();
-                })
                 .lineToConstantHeading(new Vector2d(53,64))
 
                 .build();
@@ -209,30 +206,30 @@ public class BlueAutoClose extends LinearOpMode {
 
 //    }
     }
-    public void score(){
+    public void scorePixel(){
+        robot.neutralPosition(true);
+        robot.openUpperClaw(false);
+        robot.openLowerClaw(false);
         while(Math.abs(Math.abs(robot.getLiftPosition()) - 3400) > 100) {
             robot.setLiftPosition(3400, 1);
         }
 
         robot.setLiftPower(0);
-        while(robot.getArmPosition() != 0.5) {
-            robot.toScoringPosition();
-        }
+        robot.toScoringPosition();
+        sleep(700);
 
         robot.openLowerClaw(true);
         robot.openUpperClaw(true);
-    }
+        sleep(100);
 
-    public void returnLift(){
+        robot.openUpperClaw(false);
+        robot.openLowerClaw(false);
+        robot.neutralPosition(true);
+        sleep(500);
 
-        while(robot.getArmPosition() != 0) {
-            robot.openUpperClaw(false);
-            robot.openLowerClaw(false);
-            robot.neutralPosition(true);
+        while(Math.abs(robot.getLiftPosition()) > 100) {
+            robot.setLiftPosition(0, 1);
         }
 
-        while(Math.abs(Math.abs(robot.getLiftPosition()) - 0) > 100 && robot.getArmPosition() == 1) {
-            robot.setLiftPosition(0, .5);
-        }
     }
 }

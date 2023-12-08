@@ -244,6 +244,11 @@ public class Lululu {
         }
     }
 
+    public void resetLiftEncoder(){
+        slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        slideRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
     public int getLiftPosition(){
         return slideRight.getCurrentPosition();
     }
