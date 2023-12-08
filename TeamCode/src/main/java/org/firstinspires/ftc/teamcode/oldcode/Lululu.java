@@ -29,8 +29,11 @@
 
 package org.firstinspires.ftc.teamcode.oldcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.opMode;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -44,6 +47,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDir
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Encoder;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
@@ -81,7 +85,7 @@ public class Lululu {
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     private DcMotorEx fl, fr, bl, br, slideLeft, slideRight, climb   = null;
-    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw;
+    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw, drone;
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private TfodProcessor tfod;
@@ -103,6 +107,10 @@ public class Lululu {
     static final double lowerClawOpen = 0;
     static final double lowerClawClosed = .4;
 
+    public static Pose2d robotPose;
+
+    //SampleMecanumDrive drive = new SampleMecanumDrive(myOpMode.hardwareMap);
+
 
 
     
@@ -112,9 +120,6 @@ public class Lululu {
 
         myOpMode = opmode;
     }
-    public Lululu(){
-    }
-
     /**
      * Initialize all the robot's hardware.
      * This method must be called ONCE when the OpMode is initialized.
@@ -137,6 +142,7 @@ public class Lululu {
         armRight    = myOpMode.hardwareMap.get(ServoImplEx.class, "armRight");
         armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
         wrist       = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
+        drone       = myOpMode.hardwareMap.get(ServoImplEx.class,"drone");
 
         left        = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fl"));
         right       = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fr"));
@@ -186,6 +192,7 @@ public class Lululu {
         openUpperClaw(false);
         wrist.setPosition(0);
 
+
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
     }
@@ -195,78 +202,50 @@ public class Lululu {
      * Pass the requested arm power to the appropriate hardware drive motor
      *
      */
-
-    public void driveToPosition(int x, int y, int rot, double power){
-        fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        fl.setTargetPosition(x + y + rot);
-        fr.setTargetPosition(x - y - rot);
-        bl.setTargetPosition(x - y + rot);
-        br.setTargetPosition(x + y - rot);
-
-        fl.setPower(power);
-        fr.setPower(power);
-        bl.setPower(power);
-        br.setPower(power);
-
-    }
-
-
-    public boolean isBusy(){
-        return fl.isBusy() || fr.isBusy() || bl.isBusy() || br.isBusy();
-    }
-
     public void driveByPower(double f, double s, double rot, double speed){
         fl.setPower((f+s+rot)*speed);
         fr.setPower((f-s-rot)*speed);
         bl.setPower((f-s+rot)*speed);
         br.setPower((f+s-rot)*speed);
     }
-
     public void setArmPosition(double position){
         armRight.setPosition(position);
         armLeft.setPosition(1 - position);
     }
-
     public double getArmPosition(){
         return armRight.getPosition();
     }
 
-    public void moveArm(boolean isOut){
-        if(!isOut){
-            setArmPosition(0.5);
-            openUpperClaw(false);
-            openLowerClaw(false);
-        }
-        else{
-            setArmPosition(1);
-        }
-
+    public void addLiftPositions(){
+        myOpMode.telemetry.addData("left slide", slideLeft.getCurrentPosition());
+        myOpMode.telemetry.addData("right slide", slideRight.getCurrentPosition());
     }
-
-    public void setClimbPower(double power){
-        climb.setPower(power);
-    }
-
     public void setMotorPower(double power, DcMotorEx motor){
 
         motor.setPower(power);
     }
+    public void setLiftPosition(int position, double maxPower){
+        int error = position - slideRight.getCurrentPosition();
+        double kp = 0.002;
 
+        double power = kp * error;
 
+        if(Math.abs(power) > maxPower && power >= 0){
+            slideLeft.setPower(-maxPower);
+            slideRight.setPower(maxPower);
+        }
+        else if(Math.abs(power) > maxPower && power < 0){
+            slideLeft.setPower(maxPower);
+            slideRight.setPower(-maxPower);
+        }
+        else{
+            slideLeft.setPower(-power);
+            slideRight.setPower(power);
+        }
+    }
 
-    public void setLiftPosition(int position, double power){
-        slideLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        slideLeft.setTargetPosition(position);
-        slideRight.setTargetPosition(-position);
-
-        slideLeft.setPower(power);
-        slideRight.setPower(power);
+    public int getLiftPosition(){
+        return slideRight.getCurrentPosition();
     }
 
     public void setLiftPower(double power){
@@ -302,11 +281,6 @@ public class Lululu {
         armLeft.setPwmEnable();
     }
 
-
-    public void testServo(ServoImplEx servo, double position){
-        servo.setPosition(position);
-    }
-
     public void driveFieldCentric(double targY, double targX, double targR, double speed){
         double robotAngle   = getYaw();
 //        double targY = f;
@@ -329,80 +303,9 @@ public class Lululu {
     public void resetImu(){
         imu.resetYaw();
     }
-    public void initVisionPortal() {
 
-        // Create the AprilTag processor.
-        aprilTag = new AprilTagProcessor.Builder()
-                //.setDrawAxes(false)
-                //.setDrawCubeProjection(false)
-                //.setDrawTagOutline(true)
-                //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-
-                // == CAMERA CALIBRATION ==
-                // If you do not manually specify calibration parameters, the SDK will attempt
-                // to load a predefined calibration for your camera.
-                //.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-
-                // ... these parameters are fx, fy, cx, cy.
-
-                .build();
-
-        // Create the vision portal by using a builder.
-        VisionPortal.Builder builder = new VisionPortal.Builder();
-
-        // Set the camera (webcam vs. built-in RC phone camera).
-            builder.setCamera(myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1"));
-
-        // Choose a camera resolution. Not all cameras support all resolutions.
-        //builder.setCameraResolution(new Size(640, 480));
-
-        // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-        //builder.enableCameraMonitoring(true);
-
-        // Set the stream format; MJPEG uses less bandwidth than default YUY2.
-        //builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-        // Choose whether or not LiveView stops if no processors are enabled.
-        // If set "true", monitor shows solid orange screen if no processors enabled.
-        // If set "false", monitor shows camera view without annotations.
-        //builder.setAutoStopLiveView(false);
-
-        // Set and enable the processor.
-        builder.addProcessor(aprilTag);
-
-        // Build the Vision Portal, using the above settings.
-        visionPortal = builder.build();
-
-        // Disable or re-enable the aprilTag processor at any time.
-        //visionPortal.setProcessorEnabled(aprilTag, true);
-
-    }   // end method initAprilTag()
-
-    public void telemetryAprilTag() {
-
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        telemetry.addData("# AprilTags Detected", currentDetections.size());
-
-        // Step through the list of detections and display info for each one.
-        for (AprilTagDetection detection : currentDetections) {
-            if (detection.metadata != null) {
-                telemetry.addLine(String.format("\n==== (ID %d) %s", detection.id, detection.metadata.name));
-                telemetry.addLine(String.format("XYZ %6.1f %6.1f %6.1f  (inch)", detection.ftcPose.x, detection.ftcPose.y, detection.ftcPose.z));
-                telemetry.addLine(String.format("PRY %6.1f %6.1f %6.1f  (deg)", detection.ftcPose.pitch, detection.ftcPose.roll, detection.ftcPose.yaw));
-                telemetry.addLine(String.format("RBE %6.1f %6.1f %6.1f  (inch, deg, deg)", detection.ftcPose.range, detection.ftcPose.bearing, detection.ftcPose.elevation));
-            } else {
-                telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
-                telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
-            }
-        }   // end for() loop
-
-        // Add "key" information to telemetry
-        telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
-        telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
-        telemetry.addLine("RBE = Range, Bearing & Elevation");
-
+    public void resetPose(){
+        robotPose = new Pose2d(0,0,0);
     }
 
     public void toScoringPosition(){
@@ -410,17 +313,40 @@ public class Lululu {
         wrist.setPosition(.5);
     }
 
-    public void neutralPosition(){
-        setArmPosition(0);
-        wrist.setPosition(0.35);
+    public void launchDrone(boolean launch){
+        if(launch){
+            drone.setPosition(1);
+        }
+        else{
+            drone.setPosition(0);
+        }
+    }
+
+    public void neutralPosition(boolean wristUp){
+        setArmPosition(1);
+
+        if(wristUp){
+            wrist.setPosition(0);
+        }
+        else{
+            wrist.setPosition(0.35);
+        }
+
+    }
+
+    public void updatePose(){
+
+        //robotPose = drive.getPoseEstimate();
     }
 
     public double getYaw(){
-        YawPitchRollAngles orientation;
-        orientation = imu.getRobotYawPitchRollAngles();
-
-        double output = orientation.getYaw(AngleUnit.RADIANS);
-        return output + Math.PI;
+        return 0;
+        //return robotPose.getHeading();
+//        YawPitchRollAngles orientation;
+//        orientation = imu.getRobotYawPitchRollAngles();
+//
+//        double output = orientation.getYaw(AngleUnit.RADIANS);
+//        return output + Math.PI;
     }
 
 

@@ -47,26 +47,34 @@ public class BlueAutoFar extends LinearOpMode {
         SampleMecanumDrive  drive = new SampleMecanumDrive(hardwareMap);
         Lululu              robot = new Lululu(this);
 
-        Pose2d startPos = new Pose2d(16.875, -64.4375, Math.toRadians(-90));
+        Pose2d startPos = new Pose2d(-40.875, 64.4375, Math.toRadians(90));
 
         drive.setPoseEstimate(startPos);
 
-        Trajectory traj1 = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(23,-40),Math.toRadians(90),
+        Trajectory mid1 = drive.trajectoryBuilder(startPos,true)
+                .splineTo(new Vector2d(-36,30),Math.toRadians(-90),
                                 SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                 SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
-        Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .splineTo(new Vector2d(15,-55),Math.toRadians(-120))
+        Trajectory mid2 = drive.trajectoryBuilder(mid1.end())
+                .forward(10)
                 .build();
 
-        Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(53,-44,Math.toRadians(-180)))
+        Trajectory mid3 = drive.trajectoryBuilder(mid2.end())
+                .lineToLinearHeading(new Pose2d(-55,45,Math.toRadians(180)))
                 .build();
 
-        Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
-                .lineToConstantHeading(new Vector2d(53,-64))
+        Trajectory mid4 = drive.trajectoryBuilder(mid3.end())
+                .lineToConstantHeading(new Vector2d(-55,12))
+                .build();
+
+        Trajectory mid5 = drive.trajectoryBuilder(mid4.end())
+                .lineToConstantHeading(new Vector2d(50,12))
+                .build();
+
+        Trajectory mid6 = drive.trajectoryBuilder(mid5.end(),true)
+                .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
                 .build();
 
         robot.init();
@@ -77,10 +85,12 @@ public class BlueAutoFar extends LinearOpMode {
 
 
         waitForStart();
-        drive.followTrajectory(traj1);
-        drive.followTrajectory(traj2);
-        drive.followTrajectory(traj3);
-        drive.followTrajectory(traj4);
+        drive.followTrajectory(mid1);
+        drive.followTrajectory(mid2);
+        drive.followTrajectory(mid3);
+        drive.followTrajectory(mid4);
+        drive.followTrajectory(mid5);
+        drive.followTrajectory(mid6);
 
 
 //        robot.setLiftPosition(5000,.3);

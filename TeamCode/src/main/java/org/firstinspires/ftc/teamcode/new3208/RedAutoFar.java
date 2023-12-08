@@ -52,21 +52,21 @@ public class RedAutoFar extends LinearOpMode {
         drive.setPoseEstimate(startPos);
 
         Trajectory traj1 = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(23,40),Math.toRadians(-90),
+                .splineTo(new Vector2d(-23,-40),Math.toRadians(90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         Trajectory traj2 = drive.trajectoryBuilder(traj1.end())
-                .splineTo(new Vector2d(15,55),Math.toRadians(120))
+                .splineTo(new Vector2d(-15,-55),Math.toRadians(120))
                 .build();
 
         Trajectory traj3 = drive.trajectoryBuilder(traj2.end())
-                .lineToLinearHeading(new Pose2d(53,44,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(53,-44,Math.toRadians(-180)))
                 .build();
 
         Trajectory traj4 = drive.trajectoryBuilder(traj3.end())
-                .lineToConstantHeading(new Vector2d(53,64))
+                .lineToConstantHeading(new Vector2d(53,-64))
                 .build();
 
         robot.init();

@@ -73,7 +73,40 @@ public class testMotors extends LinearOpMode{
                 robot.setMotorPower(0,(DcMotorEx) hardwareMap.dcMotor.get("fr"));
             }
 
+            if(gamepad1.right_bumper){
+                score();
+            }
+            else if(gamepad1.left_bumper){
+                returnLift();
+            }
+            else{
+                robot.setLiftPower(0);
+            }
+
+            robot.addLiftPositions();
+            telemetry.update();
         }
+    }
+
+    public void score(){
+        while(Math.abs(Math.abs(robot.getLiftPosition()) - 3400) > 100 && gamepad1.right_bumper){
+            robot.setLiftPosition(3400, 1);
+        }
+        robot.setLiftPower(0);
+        robot.toScoringPosition();
+        robot.openLowerClaw(true);
+        robot.openUpperClaw(true);
+    }
+
+    public void returnLift(){
+        robot.openUpperClaw(false);
+        robot.openLowerClaw(false);
+        robot.neutralPosition(false);
+
+        while(Math.abs(Math.abs(robot.getLiftPosition()) - 0) > 100 && robot.getArmPosition() == 1 && gamepad1.left_bumper) {
+            robot.setLiftPosition(0, .5);
+        }
+        robot.setLiftPower(0);
     }
 
 

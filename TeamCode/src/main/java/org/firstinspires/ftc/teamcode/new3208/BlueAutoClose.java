@@ -30,7 +30,7 @@ public class BlueAutoClose extends LinearOpMode {
 
     // TFOD_MODEL_ASSET points to a model file stored in the project Asset location,
     // this is only used for Android Studio when using models in Assets.
-    private static final String TFOD_MODEL_ASSET = "model_20231121_000004.tflite";
+    private static final String TFOD_MODEL_ASSET = "model_20231206_154449.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
             "Blue hat","Red hat"
@@ -39,13 +39,13 @@ public class BlueAutoClose extends LinearOpMode {
     private int objectPos = 3;
 
     static final double webcamMidX = 300;
-
+    Lululu              robot = new Lululu(this);
     @Override
     public void runOpMode(){
         SampleMecanumDrive  drive = new SampleMecanumDrive(hardwareMap);
-        Lululu              robot = new Lululu(this);
 
-        Pose2d startPos = new Pose2d(-31.125, 64.4375, Math.toRadians(90));
+
+        Pose2d startPos = new Pose2d(16.875, 64.4375, Math.toRadians(90));
 
         drive.setPoseEstimate(startPos);
 
@@ -78,6 +78,11 @@ public class BlueAutoClose extends LinearOpMode {
 
         Trajectory scoreMiddle = drive.trajectoryBuilder(outMiddle.end(),true)
                 .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
+                .addDisplacementMarker(() ->{
+                    score();
+                })
+
+
                 .build();
 
         Trajectory toLeft = drive.trajectoryBuilder(startPos,true)
@@ -94,11 +99,18 @@ public class BlueAutoClose extends LinearOpMode {
                 .lineToLinearHeading(new Pose2d(53,44,Math.toRadians(180)))
                 .build();
 
-        Trajectory parkRight = drive.trajectoryBuilder((scoreLeft.end()),true)
+        Trajectory park = drive.trajectoryBuilder((drive.getPoseEstimate()),true)
+                .addDisplacementMarker(() ->{
+                    returnLift();
+                })
                 .lineToConstantHeading(new Vector2d(53,64))
+
                 .build();
 
         robot.init();
+        initDoubleVision();
+
+        detectObject();
 
         telemetry.addData("Ready for W", "");
         telemetry.update();
@@ -107,83 +119,120 @@ public class BlueAutoClose extends LinearOpMode {
 
         waitForStart();
 
-        drive.followTrajectory(toRight);
-        drive.followTrajectory(outRight);
-        drive.followTrajectory(scoreRight);
-//        robot.setLiftPosition(5000,.3);
-//        robot.toScoringPosition();
-//        robot.openLowerClaw(true);
-//        robot.openLowerClaw(false);
-//        robot.neutralPosition();
-//        robot.setLiftPosition(0,.3);
-        drive.followTrajectory(parkRight);
+
+        drive.followTrajectory(toMiddle);
+        drive.followTrajectory(outMiddle);
+        drive.followTrajectory(scoreMiddle);
+        drive.followTrajectory(park);
 
 
 //        if(objectPos == 1){
 //
 //        }
 //        else{
+//            drive.followTrajectory(toLeft);
+//            drive.followTrajectory(outLeft);
+//            drive.followTrajectory(scoreLeft);
+//            drive.followTrajectory(park);
+//        }
+//        if(objectPos == 2){
+//            drive.followTrajectory(toMiddle);
+//            drive.followTrajectory(outMiddle);
+//            drive.followTrajectory(scoreMiddle);
+//            drive.followTrajectory(park);
+//        }
+//        else{
 //            drive.followTrajectory(toRight);
 //            drive.followTrajectory(outRight);
 //            drive.followTrajectory(scoreRight);
+//            drive.followTrajectory(park);
 //        }
+
+        robot.updatePose();
     }
 
 
 
-//    private void initDoubleVision() {
-//        // -----------------------------------------------------------------------------------------
-//        // AprilTag Configuration
-//        // -----------------------------------------------------------------------------------------
-//
-//        aprilTag = new AprilTagProcessor.Builder()
-//                .build();
-//
-//        // -----------------------------------------------------------------------------------------
-//        // TFOD Configuration
-//        // -----------------------------------------------------------------------------------------
-//
-//        tfod = new TfodProcessor.Builder()
-//                .setModelAssetName(TFOD_MODEL_ASSET)
-//                .setModelLabels(LABELS)
-//                .build();
-//
-//        // -----------------------------------------------------------------------------------------
-//        // Camera Configuration
-//        // -----------------------------------------------------------------------------------------
-//
-//
-//        myVisionPortal = new org.firstinspires.ftc.vision.VisionPortal.Builder()
-//                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-//
-//                .addProcessors(tfod, aprilTag)
-//                .build();
-//
-//    }   // end initDoubleVision()
-//
-//    private int detectObject() {
-//        List<Recognition> currentRecognitions = tfod.getRecognitions();
-//        telemetry.addData("# Objects Detected", currentRecognitions.size());
-//
-//        // Step through the list of recognitions and display info for each one.
-//        for (Recognition recognition : currentRecognitions) {
-//            double x = (recognition.getLeft() + recognition.getRight()) / 2 ;
-//            double y = (recognition.getTop()  + recognition.getBottom()) / 2 ;
-//
-//            telemetry.addData(""," ");
-//            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-//            telemetry.addData("- Position", "%.0f / %.0f", x, y);
-//            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
-//            telemetry.update();
-//
-//            if(x < 300){
-//                return 1;
-//            }
-//            if(x >300){
-//                return 2;
-//            }
-//        }   // end for() loop
-//        return 3;
-//
+    private void initDoubleVision() {
+        // -----------------------------------------------------------------------------------------
+        // AprilTag Configuration
+        // -----------------------------------------------------------------------------------------
+
+        aprilTag = new AprilTagProcessor.Builder()
+                .build();
+
+        // -----------------------------------------------------------------------------------------
+        // TFOD Configuration
+        // -----------------------------------------------------------------------------------------
+
+        tfod = new TfodProcessor.Builder()
+                .setModelAssetName(TFOD_MODEL_ASSET)
+                .setModelLabels(LABELS)
+                .build();
+
+        // -----------------------------------------------------------------------------------------
+        // Camera Configuration
+        // -----------------------------------------------------------------------------------------
+
+
+        myVisionPortal = new org.firstinspires.ftc.vision.VisionPortal.Builder()
+                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+
+                .addProcessors(tfod, aprilTag)
+                .build();
+
+    }   // end initDoubleVision()
+
+    private int detectObject() {
+        List<Recognition> currentRecognitions = tfod.getRecognitions();
+        telemetry.addData("# Objects Detected", currentRecognitions.size());
+
+        // Step through the list of recognitions and display info for each one.
+        for (Recognition recognition : currentRecognitions) {
+            double x = (recognition.getLeft() + recognition.getRight()) / 2;
+            double y = (recognition.getTop() + recognition.getBottom()) / 2;
+
+            telemetry.addData("", " ");
+            telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+            telemetry.addData("- Position", "%.0f / %.0f", x, y);
+            telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
+            telemetry.update();
+
+            if (x < 300) {
+                return 1;
+            }
+            if (x > 300) {
+                return 2;
+            }
+        }   // end for() loop
+        return 3;
+
 //    }
+    }
+    public void score(){
+        while(Math.abs(Math.abs(robot.getLiftPosition()) - 3400) > 100) {
+            robot.setLiftPosition(3400, 1);
+        }
+
+        robot.setLiftPower(0);
+        while(robot.getArmPosition() != 0.5) {
+            robot.toScoringPosition();
+        }
+
+        robot.openLowerClaw(true);
+        robot.openUpperClaw(true);
+    }
+
+    public void returnLift(){
+
+        while(robot.getArmPosition() != 0) {
+            robot.openUpperClaw(false);
+            robot.openLowerClaw(false);
+            robot.neutralPosition(true);
+        }
+
+        while(Math.abs(Math.abs(robot.getLiftPosition()) - 0) > 100 && robot.getArmPosition() == 1) {
+            robot.setLiftPosition(0, .5);
+        }
+    }
 }

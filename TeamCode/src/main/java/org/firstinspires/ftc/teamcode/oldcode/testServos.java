@@ -18,18 +18,17 @@ public class testServos extends LinearOpMode {
 
 
 
+
         waitForStart();
         while(opModeIsActive()){
 
 
 
             if(gamepad1.a) {
-                robot.setArmPosition(0.5);
-                robot.wrist.setPosition(0.5);
+                robot.launchDrone(true);
             }
-            else {
-                robot.wrist.setPosition(0.3);
-                robot.setArmPosition(0);
+            else{
+                robot.launchDrone(false);
             }
 
             telemetry.addData("wrist position:", robot.wrist.getPosition());

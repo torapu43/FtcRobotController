@@ -37,6 +37,7 @@ public class TeleOpLululu extends LinearOpMode{
         boolean prevDupButtonState = false;
 
         boolean armEnabled = false;
+        boolean wristUp = true;
 
 
         robot.init();
@@ -72,7 +73,7 @@ public class TeleOpLululu extends LinearOpMode{
             }
 
             if (gamepad1.dpad_down) {
-                robot.resetImu();
+                robot.resetPose();
             }
 
             robot.setLiftPower(gamepad2.left_stick_y);
@@ -116,7 +117,15 @@ public class TeleOpLululu extends LinearOpMode{
                 if (scoringPosition) {
                     robot.toScoringPosition();
                 } else {
-                    robot.neutralPosition();
+
+                    if (gamepad2.b || (!uClawOpen && !lClawOpen)){
+                        wristUp = true;
+                    }
+                    else{
+                        wristUp = false;
+                    }
+                    robot.neutralPosition(wristUp);
+
 
                 }
                 prevBumperState = gamepad2.left_bumper;
@@ -132,8 +141,9 @@ public class TeleOpLululu extends LinearOpMode{
                 }
             }
             robot.setLiftPower((gamepad2.left_stick_y / 2));
-            robot.setClimbPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
+            robot.updatePose();
+            robot.addLiftPositions();
             telemetry.update();
         }
     }

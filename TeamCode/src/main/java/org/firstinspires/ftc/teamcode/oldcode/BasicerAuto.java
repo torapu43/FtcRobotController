@@ -108,14 +108,6 @@ public class BasicerAuto extends LinearOpMode {
 
     }
 
-    private boolean driveEncoder(int fwd, int strafe, double power){
-        //drive to targeted position
-        robot.driveToPosition(fwd,strafe,0,power);
-
-        //if the robot is no longer moving, return true
-        return !robot.isBusy();
-
-    }
 
 //    private boolean driveCurved()
 //    {
