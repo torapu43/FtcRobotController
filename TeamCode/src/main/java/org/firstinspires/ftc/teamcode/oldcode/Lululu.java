@@ -191,6 +191,8 @@ public class Lululu {
         openLowerClaw(false);
         openUpperClaw(false);
         wrist.setPosition(0);
+        launchDrone(false);
+        resetLiftEncoder();
 
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
@@ -226,7 +228,7 @@ public class Lululu {
     }
     public void setLiftPosition(int position, double maxPower){
         int error = position - slideRight.getCurrentPosition();
-        double kp = 0.002;
+        double kp = 0.01;
 
         double power = kp * error;
 
@@ -331,7 +333,7 @@ public class Lululu {
         setArmPosition(1);
 
         if(wristUp){
-            wrist.setPosition(0);
+            wrist.setPosition(0.1);
         }
         else{
             wrist.setPosition(0.35);
@@ -345,13 +347,11 @@ public class Lululu {
     }
 
     public double getYaw(){
-        return 0;
-        //return robotPose.getHeading();
-//        YawPitchRollAngles orientation;
-//        orientation = imu.getRobotYawPitchRollAngles();
-//
-//        double output = orientation.getYaw(AngleUnit.RADIANS);
-//        return output + Math.PI;
+        YawPitchRollAngles orientation;
+        orientation = imu.getRobotYawPitchRollAngles();
+
+        double output = orientation.getYaw(AngleUnit.RADIANS);
+        return output + Math.PI;
     }
 
 

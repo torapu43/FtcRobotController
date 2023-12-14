@@ -33,10 +33,10 @@ public class BlueAutoClose extends LinearOpMode {
     private static final String TFOD_MODEL_ASSET = "model_20231206_154449.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
     private static final String[] LABELS = {
-            "Blue hat","Red hat"
+            "BlueHat","RedHat"
     };
 
-    private int objectPos = 3;
+    private int objectPos = 2;
 
     static final double webcamMidX = 300;
     Lululu              robot = new Lululu(this);
@@ -46,16 +46,19 @@ public class BlueAutoClose extends LinearOpMode {
 
 
         Pose2d startPos = new Pose2d(16.875, 64.4375, Math.toRadians(90));
+        Pose2d prePark = new Pose2d(53,38,Math.toRadians(-180));
 
         drive.setPoseEstimate(startPos);
 
         Trajectory toRight = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(12,40),Math.toRadians(90),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .splineTo(new Vector2d(4,45),Math.toRadians(110),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .splineTo(new Vector2d(15,50),Math.toRadians(-108)
+        //                , SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        //                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .splineTo(new Vector2d(7,40),Math.toRadians(-150)
+        //                , SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+        //                SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
                 .build();
 
         Trajectory outRight = drive.trajectoryBuilder(toRight.end(),false)
@@ -63,7 +66,12 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory scoreRight = drive.trajectoryBuilder(outRight.end(),false)
-                .lineToLinearHeading(new Pose2d(53,32,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(58,28,Math.toRadians(180)))
+                .addDisplacementMarker(() ->{
+                    drive.setDrivePower(new Pose2d(0,0,0));
+                    scorePixel();
+
+                })
                 .build();
 
         Trajectory toMiddle = drive.trajectoryBuilder(startPos,true)
@@ -77,8 +85,9 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory scoreMiddle = drive.trajectoryBuilder(outMiddle.end(),true)
-                .lineToLinearHeading(new Pose2d(53,38,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(58,34,Math.toRadians(180)))
                 .addDisplacementMarker(() ->{
+                    drive.setDrivePower(new Pose2d(0,0,0));
                     scorePixel();
                 })
 
@@ -86,7 +95,7 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory toLeft = drive.trajectoryBuilder(startPos,true)
-                .splineTo(new Vector2d(23,40),Math.toRadians(-90),
+                .splineTo(new Vector2d(24,40),Math.toRadians(-90),
                         SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
@@ -96,18 +105,28 @@ public class BlueAutoClose extends LinearOpMode {
                 .build();
 
         Trajectory scoreLeft = drive.trajectoryBuilder(outLeft.end(),true)
-                .lineToLinearHeading(new Pose2d(53,44,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(58,43,Math.toRadians(180)))
+                .addDisplacementMarker(() ->{
+                    drive.setDrivePower(new Pose2d(0,0,0));
+                    scorePixel();
+                })
                 .build();
 
-        Trajectory park = drive.trajectoryBuilder((drive.getPoseEstimate()),true)
+        Trajectory park = drive.trajectoryBuilder(prePark,true)
                 .lineToConstantHeading(new Vector2d(53,64))
 
                 .build();
 
+        Trajectory park2 = drive.trajectoryBuilder(park.end(),true)
+                        .splineToLinearHeading(new Pose2d(60,64),Math.toRadians(180))
+                                .build();
+
         robot.init();
         initDoubleVision();
 
-        detectObject();
+        while(opModeInInit()) {
+            objectPos = detectObject();
+        }
 
         telemetry.addData("Ready for W", "");
         telemetry.update();
@@ -116,34 +135,27 @@ public class BlueAutoClose extends LinearOpMode {
 
         waitForStart();
 
-
-        drive.followTrajectory(toMiddle);
-        drive.followTrajectory(outMiddle);
-        drive.followTrajectory(scoreMiddle);
-        drive.followTrajectory(park);
-
-
-//        if(objectPos == 1){
 //
-//        }
-//        else{
-//            drive.followTrajectory(toLeft);
-//            drive.followTrajectory(outLeft);
-//            drive.followTrajectory(scoreLeft);
-//            drive.followTrajectory(park);
-//        }
-//        if(objectPos == 2){
-//            drive.followTrajectory(toMiddle);
-//            drive.followTrajectory(outMiddle);
-//            drive.followTrajectory(scoreMiddle);
-//            drive.followTrajectory(park);
-//        }
-//        else{
-//            drive.followTrajectory(toRight);
-//            drive.followTrajectory(outRight);
-//            drive.followTrajectory(scoreRight);
-//            drive.followTrajectory(park);
-//        }
+//        drive.followTrajectory(toLeft);
+//        drive.followTrajectory(outLeft);
+//        drive.followTrajectory(scoreLeft);
+//
+
+        if(objectPos == 1){
+            drive.followTrajectory(toLeft);
+            drive.followTrajectory(outLeft);
+            drive.followTrajectory(scoreLeft);
+        }
+        else if(objectPos == 2){
+            drive.followTrajectory(toMiddle);
+            drive.followTrajectory(outMiddle);
+            drive.followTrajectory(scoreMiddle);
+        }
+        else{
+            drive.followTrajectory(toRight);
+            drive.followTrajectory(outRight);
+            drive.followTrajectory(scoreRight);
+        }
 
         robot.updatePose();
     }
@@ -195,10 +207,10 @@ public class BlueAutoClose extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             telemetry.update();
 
-            if (x < 300) {
+            if (x < 250) {
                 return 1;
             }
-            if (x > 300) {
+            if (x > 250) {
                 return 2;
             }
         }   // end for() loop
@@ -210,8 +222,8 @@ public class BlueAutoClose extends LinearOpMode {
         robot.neutralPosition(true);
         robot.openUpperClaw(false);
         robot.openLowerClaw(false);
-        while(Math.abs(Math.abs(robot.getLiftPosition()) - 3400) > 100) {
-            robot.setLiftPosition(3400, 1);
+        while(Math.abs(Math.abs(robot.getLiftPosition()) - 1200) > 100) {
+            robot.setLiftPosition(1200, 1);
         }
 
         robot.setLiftPower(0);

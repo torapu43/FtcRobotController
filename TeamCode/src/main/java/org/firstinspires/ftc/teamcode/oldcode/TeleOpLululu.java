@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.oldcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp
 
@@ -39,6 +40,8 @@ public class TeleOpLululu extends LinearOpMode{
         boolean armEnabled = false;
         boolean wristUp = true;
 
+        ElapsedTime clawDelay = new ElapsedTime();
+
 
         robot.init();
 
@@ -73,7 +76,7 @@ public class TeleOpLululu extends LinearOpMode{
             }
 
             if (gamepad1.dpad_down) {
-                robot.resetPose();
+                robot.resetImu();
             }
 
             robot.setLiftPower(gamepad2.left_stick_y);
@@ -118,8 +121,9 @@ public class TeleOpLululu extends LinearOpMode{
                     robot.toScoringPosition();
                 } else {
 
-                    if (gamepad2.b || (!uClawOpen && !lClawOpen)){
+                    if ((gamepad2.b || (!uClawOpen && !lClawOpen)) && clawDelay.seconds() > .5){
                         wristUp = true;
+                        clawDelay.reset();
                     }
                     else{
                         wristUp = false;
@@ -142,8 +146,14 @@ public class TeleOpLululu extends LinearOpMode{
             }
             robot.setLiftPower((gamepad2.left_stick_y / 2));
 
+            if(gamepad1.left_trigger == 1){
+                robot.launchDrone(true);
+            }
+
+
             robot.updatePose();
             robot.addLiftPositions();
+            telemetry.addData("field centric on?: ", fieldCentric);
             telemetry.update();
         }
     }

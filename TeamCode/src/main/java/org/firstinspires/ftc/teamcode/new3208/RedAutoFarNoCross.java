@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Timer;
 
 @Autonomous
-public class RedAutoFar extends LinearOpMode {
+public class RedAutoFarNoCross extends LinearOpMode {
 
 
 
@@ -72,15 +72,10 @@ public class RedAutoFar extends LinearOpMode {
 
         Trajectory mid5 = drive.trajectoryBuilder(mid4.end())
                 .lineToConstantHeading(new Vector2d(50,-12))
-                .addDisplacementMarker(() ->{
-                    while(getRuntime() <20) {
-                        drive.setDrivePower(new Pose2d(0, 0, 0));
-                    }
-                })
                 .build();
 
         Trajectory mid6 = drive.trajectoryBuilder(mid5.end(),true)
-                .lineToLinearHeading(new Pose2d(55,-40,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(55,-42,Math.toRadians(180)))
                 .addDisplacementMarker(() ->{
                     drive.setDrivePower(new Pose2d(0,0,0));
                     scorePixel();
@@ -106,17 +101,11 @@ public class RedAutoFar extends LinearOpMode {
                 .build();
 
         Trajectory left5 = drive.trajectoryBuilder(left4.end())
-                .lineToConstantHeading(new Vector2d(50,-12))
-                .addDisplacementMarker(() ->{
-                    while(getRuntime() <20) {
-                        drive.setDrivePower(new Pose2d(0, 0, 0));
-                    }
-                })
-
+                .lineToConstantHeading(new Vector2d(50,12))
                 .build();
 
         Trajectory left6 = drive.trajectoryBuilder(left5.end(),true)
-                .lineToLinearHeading(new Pose2d(55,-34,Math.toRadians(180)))
+                .lineToLinearHeading(new Pose2d(55,-36,Math.toRadians(180)))
                 .addDisplacementMarker(() ->{
                     drive.setDrivePower(new Pose2d(0,0,0));
                     scorePixel();
@@ -144,13 +133,7 @@ public class RedAutoFar extends LinearOpMode {
                 .build();
         Trajectory right6 = drive.trajectoryBuilder(right5.end())
                 .lineToConstantHeading(new Vector2d(50,-12))
-                .addDisplacementMarker(() ->{
-                    while(getRuntime() <20) {
-                        drive.setDrivePower(new Pose2d(0, 0, 0));
-                    }
-                })
                 .build();
-
         Trajectory right7 = drive.trajectoryBuilder(right6.end(),true)
                 .lineToLinearHeading(new Pose2d(56,-45,Math.toRadians(180)))
                 .addDisplacementMarker(() ->{
@@ -178,36 +161,24 @@ public class RedAutoFar extends LinearOpMode {
 
         waitForStart();
 
-        if(objectPos == 3) {
-            drive.followTrajectory(left1);
-            drive.followTrajectory(left2);
-            drive.followTrajectory(left3);
-            drive.followTrajectory(left4);
-            drive.followTrajectory(left5);
-            drive.followTrajectory(left6);
-            drive.followTrajectory(left7);
-        }
-        else if(objectPos == 2) {
+//        if(objectPos == 3) {
+//            drive.followTrajectory(left1);
+//            drive.followTrajectory(left2);
+
+//        }
+//        else if(objectPos == 2) {
             drive.followTrajectory(mid1);
             drive.followTrajectory(mid2);
-            drive.followTrajectory(mid3);
-            drive.followTrajectory(mid4);
-            drive.followTrajectory(mid5);
-            drive.followTrajectory(mid6);
-            drive.followTrajectory(mid7);
-        }
-        else{
-            drive.followTrajectory(right1);
-            drive.followTrajectory(right2);
-            drive.followTrajectory(right3);
-            drive.followTrajectory(right4);
-            drive.followTrajectory(right5);
-            drive.followTrajectory(right6);
-            drive.followTrajectory(right7);
-            drive.followTrajectory(right8);
-            drive.followTrajectory(right9);
+//            drive.followTrajectory(mid3);
 
-        }
+//        }
+//        else{
+//            drive.followTrajectory(right1);
+//            drive.followTrajectory(right2);
+//            drive.followTrajectory(right3);
+//
+//
+//        }
 //        robot.setLiftPosition(5000,.3);
 //        robot.toScoringPosition();
 //        robot.openLowerClaw(true);
@@ -273,11 +244,11 @@ public class RedAutoFar extends LinearOpMode {
             telemetry.addData("- Size", "%.0f x %.0f", recognition.getWidth(), recognition.getHeight());
             telemetry.update();
 
-            if(x > 220){
+            if(x < 220){
                 return 2;
             }
-            if(x <220){
-                return 1;
+            if(x >220){
+                return 3;
             }
         }   // end for() loop
         return 1;
