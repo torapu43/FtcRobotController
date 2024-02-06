@@ -157,7 +157,7 @@ public class BlueAutoClose extends LinearOpMode {
             drive.followTrajectory(scoreRight);
         }
 
-        robot.updatePose();
+        RobotPose.currentPose = drive.getPoseEstimate();
     }
 
 
