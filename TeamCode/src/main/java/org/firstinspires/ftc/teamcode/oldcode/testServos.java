@@ -30,17 +30,13 @@ public class testServos extends LinearOpMode {
 //            else{
 //                robot.launchDrone(false);
 //            }
-            if(gamepad1.a){
-                robot.wrist.setPosition(.3);
-            }
-            else {
-                robot.wrist.setPosition(gamepad1.right_trigger);
-            }
-            robot.setArmPosition(1 - gamepad1.left_trigger);
+//            robot.drone.setPosition(gamepad1.right_trigger);
 
+            //robot.prong.setPosition(gamepad1.left_trigger);
+            robot.wrist.setPosition(gamepad1.right_trigger);
 
             telemetry.addData("wrist position:", robot.wrist.getPosition());
-            telemetry.addData("arm position:", robot.getArmPosition());
+            telemetry.addData("prong position:", robot.prong.getPosition());
 //        robot.setArmPosition(1- gamepad1.left_trigger);
 //        telemetry.addData("arm position", 1 - gamepad1.left_trigger);
             telemetry.update();

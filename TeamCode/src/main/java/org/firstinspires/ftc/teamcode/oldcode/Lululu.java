@@ -85,14 +85,13 @@ public class Lululu {
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
     private DcMotorEx fl, fr, bl, br, slideLeft, slideRight, climb   = null;
-    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw, drone;
+    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw, drone, prong;
     private IMU imu;
     private AprilTagProcessor aprilTag;
     private TfodProcessor tfod;
     private VisionPortal visionPortal;
 
     private Encoder left, right, back;
-
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
 
@@ -102,10 +101,10 @@ public class Lululu {
     static final double leftArmOuttakePosition = 1;
     static final double rightArmOuttakePosition = 0;
 
-    static final double upperClawOpen = 0.3;
-    static final double upperClawClosed = 0;
+    static final double upperClawOpen = 0;
+    static final double upperClawClosed = 1;
     static final double lowerClawOpen = 0;
-    static final double lowerClawClosed = .4;
+    static final double lowerClawClosed = 1;
 
     public static Pose2d robotPose;
 
@@ -143,6 +142,7 @@ public class Lululu {
         armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
         wrist       = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
         drone       = myOpMode.hardwareMap.get(ServoImplEx.class,"drone");
+        prong       = myOpMode.hardwareMap.get(ServoImplEx.class,"prong");
 
         left        = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fl"));
         right       = new Encoder(myOpMode.hardwareMap.get(DcMotorEx.class, "fr"));
@@ -187,12 +187,12 @@ public class Lululu {
                 )
         );
 
-        disableArm();
-        openLowerClaw(false);
-        openUpperClaw(false);
-        wrist.setPosition(0);
+//        disableArm();
+//        openLowerClaw(false);
+//        openUpperClaw(false);
+//        wrist.setPosition(0);
         launchDrone(false);
-        resetLiftEncoder();
+        //resetLiftEncoder();
 
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
@@ -288,6 +288,10 @@ public class Lululu {
         armLeft.setPwmEnable();
     }
 
+    public void setProng(double val){
+        prong.setPosition(val);
+    }
+
     public void driveFieldCentric(double targY, double targX, double targR, double speed){
         double robotAngle   = getYaw();
 //        double targY = f;
@@ -322,22 +326,24 @@ public class Lululu {
 
     public void launchDrone(boolean launch){
         if(launch){
-            drone.setPosition(1);
+            drone.setPosition(0);
         }
         else{
-            drone.setPosition(0);
+            drone.setPosition(1);
         }
     }
 
     public void neutralPosition(boolean wristUp){
-        setArmPosition(1);
-
-        if(wristUp){
-            wrist.setPosition(0.1);
-        }
-        else{
-            wrist.setPosition(0.35);
-        }
+        wrist.setPwmDisable();
+        disableArm();
+//        setArmPosition(1);
+//
+//        if(wristUp){
+//            wrist.setPosition(0.1);
+//        }
+//        else{
+//            wrist.setPosition(0.35);
+//        }
 
     }
 

@@ -164,31 +164,31 @@ public class BlueAutoFar extends LinearOpMode {
         if(objectPos == 3) {
             drive.followTrajectory(right1);
             drive.followTrajectory(right2);
-            drive.followTrajectory(right3);
-            drive.followTrajectory(right4);
-            drive.followTrajectory(right5);
-            drive.followTrajectory(right6);
-            drive.followTrajectory(right7);
+//            drive.followTrajectory(right3);
+//            drive.followTrajectory(right4);
+//            drive.followTrajectory(right5);
+//            drive.followTrajectory(right6);
+//            drive.followTrajectory(right7);
         }
         else if(objectPos == 2) {
             drive.followTrajectory(mid1);
             drive.followTrajectory(mid2);
-            drive.followTrajectory(mid3);
-            drive.followTrajectory(mid4);
-            drive.followTrajectory(mid5);
-            drive.followTrajectory(mid6);
-            drive.followTrajectory(mid7);
+//            drive.followTrajectory(mid3);
+//            drive.followTrajectory(mid4);
+//            drive.followTrajectory(mid5);
+//            drive.followTrajectory(mid6);
+//            drive.followTrajectory(mid7);
         }
         else{
             drive.followTrajectory(left1);
             drive.followTrajectory(left2);
-            drive.followTrajectory(left3);
-            drive.followTrajectory(left4);
-            drive.followTrajectory(left5);
-            drive.followTrajectory(left6);
-            drive.followTrajectory(left7);
-            drive.followTrajectory(left8);
-            drive.followTrajectory(left9);
+//            drive.followTrajectory(left3);
+//            drive.followTrajectory(left4);
+//            drive.followTrajectory(left5);
+//            drive.followTrajectory(left6);
+//            drive.followTrajectory(left7);
+//            drive.followTrajectory(left8);
+//            drive.followTrajectory(left9);
 
         }
 //        robot.setLiftPosition(5000,.3);

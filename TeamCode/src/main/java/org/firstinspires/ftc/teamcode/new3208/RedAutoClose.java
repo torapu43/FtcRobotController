@@ -160,27 +160,27 @@ public class RedAutoClose extends LinearOpMode {
 //        drive.followTrajectory(outLeft);
 //        drive.followTrajectory(scoreLeft);
 //
-
+//
         if(objectPos == 1){
             drive.followTrajectory(toLeft);
-            drive.followTrajectory(outLeft);
-            drive.followTrajectory(scoreLeft);
-            drive.followTrajectory(park1Left);
-            drive.followTrajectory(park2Left);
+//            drive.followTrajectory(outLeft);
+//            drive.followTrajectory(scoreLeft);
+//            drive.followTrajectory(park1Left);
+//            drive.followTrajectory(park2Left);
         }
         else if(objectPos == 2){
             drive.followTrajectory(toMiddle);
-            drive.followTrajectory(outMiddle);
-            drive.followTrajectory(scoreMiddle);
-            drive.followTrajectory(park1Middle);
-            drive.followTrajectory(park2Middle);
+//            drive.followTrajectory(outMiddle);
+//            drive.followTrajectory(scoreMiddle);
+//            drive.followTrajectory(park1Middle);
+//            drive.followTrajectory(park2Middle);
         }
         else{
             drive.followTrajectory(toRight);
-            drive.followTrajectory(outRight);
-            drive.followTrajectory(scoreRight);
-            drive.followTrajectory(park1Right);
-            drive.followTrajectory(park2Right);
+//            drive.followTrajectory(outRight);
+//            drive.followTrajectory(scoreRight);
+//            drive.followTrajectory(park1Right);
+//            drive.followTrajectory(park2Right);
         }
 
         robot.updatePose();

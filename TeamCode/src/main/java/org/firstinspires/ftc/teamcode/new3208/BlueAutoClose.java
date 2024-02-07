@@ -143,18 +143,18 @@ public class BlueAutoClose extends LinearOpMode {
 
         if(objectPos == 1){
             drive.followTrajectory(toLeft);
-            drive.followTrajectory(outLeft);
-            drive.followTrajectory(scoreLeft);
+            //drive.followTrajectory(outLeft);
+            //drive.followTrajectory(scoreLeft);
         }
         else if(objectPos == 2){
             drive.followTrajectory(toMiddle);
-            drive.followTrajectory(outMiddle);
-            drive.followTrajectory(scoreMiddle);
+            //drive.followTrajectory(outMiddle);
+            //drive.followTrajectory(scoreMiddle);
         }
         else{
             drive.followTrajectory(toRight);
-            drive.followTrajectory(outRight);
-            drive.followTrajectory(scoreRight);
+            //drive.followTrajectory(outRight);
+            //drive.followTrajectory(scoreRight);
         }
 
         RobotPose.currentPose = drive.getPoseEstimate();
