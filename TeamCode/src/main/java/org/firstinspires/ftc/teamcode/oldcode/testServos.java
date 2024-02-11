@@ -3,13 +3,18 @@ package org.firstinspires.ftc.teamcode.oldcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.teamcode.new3208.ScoringMechanisms;
 
 @TeleOp
 public class testServos extends LinearOpMode {
-    Lululu robot = new Lululu(this);
+    ScoringMechanisms robot = new ScoringMechanisms(this);
     boolean enabled = true;
     boolean uClawOpen = false;
     boolean prevAButtonState = false;
+    ElapsedTime delay = new ElapsedTime();
+    ElapsedTime delay2 = new ElapsedTime();
 
     @Override
     public void runOpMode(){
@@ -33,10 +38,34 @@ public class testServos extends LinearOpMode {
 //            robot.drone.setPosition(gamepad1.right_trigger);
 
             //robot.prong.setPosition(gamepad1.left_trigger);
-            robot.wrist.setPosition(gamepad1.right_trigger);
+            if(!gamepad1.a) {
+                robot.wrist.setPosition(0);
+                if(delay2.time() < 1.5) {
+                    robot.setArmPosition(1);
+
+                }
+                else{
+                    robot.disableArm();
+                    robot.openLowerClaw(true);
+                    robot.openUpperClaw(true);
+                }
+                delay.reset();
+            }
+            else{
+                robot.openLowerClaw(false);
+                robot.openUpperClaw(false);
+                if(delay.time() > 1) {
+                    robot.wrist.setPosition(1);
+                }
+                else{
+                    robot.wrist.setPosition(.3);
+                }
+                robot.setArmPosition(.1);
+                delay2.reset();
+            }
 
             telemetry.addData("wrist position:", robot.wrist.getPosition());
-            telemetry.addData("prong position:", robot.prong.getPosition());
+            telemetry.addData("arm position:", robot.getArmPosition());
 //        robot.setArmPosition(1- gamepad1.left_trigger);
 //        telemetry.addData("arm position", 1 - gamepad1.left_trigger);
             telemetry.update();

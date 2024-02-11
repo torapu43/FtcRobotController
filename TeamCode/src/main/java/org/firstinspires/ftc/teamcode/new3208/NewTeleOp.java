@@ -28,7 +28,6 @@ public class NewTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode(){
-        controls.assign();
         lu3.init();
 
         waitForStart();

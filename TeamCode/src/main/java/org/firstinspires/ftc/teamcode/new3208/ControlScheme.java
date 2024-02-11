@@ -5,12 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 public class ControlScheme{
     private LinearOpMode opMode = null;
-
-    public ControlScheme (LinearOpMode opMode) {
-
-        this.opMode = opMode;
-    }
-
     public double drive;
     public double strafe;
     public double turn;
@@ -21,19 +15,38 @@ public class ControlScheme{
     public boolean openBottom;
 
     public boolean flipArm;
+    public boolean grabStack;
 
+    public ControlScheme (LinearOpMode opMode) {
+        this.opMode = opMode;
 
-
-    public void assign(){
         drive       = -opMode.gamepad1.left_stick_y;
         strafe      = opMode.gamepad1.left_stick_x;
         turn        = opMode.gamepad1.right_stick_x;
-        lift        = -opMode.gamepad2.left_stick_y;
+        grabStack   = opMode.gamepad1.a;
 
+
+        lift        = -opMode.gamepad2.left_stick_y;
         closeClaws  = opMode.gamepad2.b;
         openTop     = opMode.gamepad2.y;
         openBottom  = opMode.gamepad2.a;
         flipArm     = opMode.gamepad2.left_bumper;
 
     }
+    public void update(){
+        drive       = -opMode.gamepad1.left_stick_y;
+        strafe      = opMode.gamepad1.left_stick_x;
+        turn        = opMode.gamepad1.right_stick_x;
+        grabStack   = opMode.gamepad1.a;
+
+
+        lift        = -opMode.gamepad2.left_stick_y;
+        closeClaws  = opMode.gamepad2.b;
+        openTop     = opMode.gamepad2.y;
+        openBottom  = opMode.gamepad2.a;
+        flipArm     = opMode.gamepad2.left_bumper;
+
+    }
+
+
 }

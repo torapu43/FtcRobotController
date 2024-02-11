@@ -101,10 +101,13 @@ public class ScoringMechanisms {
 
     static final double armOutPosition = 0;
     static final double armInPosition = 1;
-    static final double upperClawOpen = 0.3;
+    static final double upperClawOpen = 1;
     static final double upperClawClosed = 0;
     static final double lowerClawOpen = 0;
-    static final double lowerClawClosed = .4;
+    static final double lowerClawClosed = 1;
+    static final double WRIST_INTAKE_POSITION = 0;
+    static final double WRIST_UPWARD_POSITION = .25;
+    static final double WRIST_SCORING_POSITION = 1;
 
     //SampleMecanumDrive drive = new SampleMecanumDrive(myOpMode.hardwareMap);
 
@@ -159,6 +162,7 @@ public class ScoringMechanisms {
         disableArm();
         openLowerClaw(false);
         openUpperClaw(false);
+        homeLift();
         wrist.setPosition(0);
         launchDrone(false);
         resetLiftEncoder();
@@ -169,6 +173,7 @@ public class ScoringMechanisms {
     }
 
     public boolean isPixelIn(){
+
         return clawDetector.getDistance(DistanceUnit.CM) <= 1.8;
     }
 
@@ -247,6 +252,7 @@ public class ScoringMechanisms {
         if(toScoringPosition){
             armRight.setPosition(armOutPosition);
             armLeft.setPosition(1-armOutPosition);
+            wrist.setPosition(1);
         }
         else{
             armRight.setPosition(armInPosition);
@@ -282,6 +288,7 @@ public class ScoringMechanisms {
 
     }
 
+    //return true if lift is at home? not sure please check which one it is
     public boolean homeLift() {
         if(!limitSwitch.getState()){
             setLiftPower(-.5);

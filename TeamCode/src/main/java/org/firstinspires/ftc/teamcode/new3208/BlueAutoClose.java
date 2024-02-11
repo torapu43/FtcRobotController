@@ -186,11 +186,11 @@ public class BlueAutoClose extends LinearOpMode {
 
         myVisionPortal = new org.firstinspires.ftc.vision.VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
-
                 .addProcessors(tfod, aprilTag)
                 .build();
 
     }   // end initDoubleVision()
+
 
     private int detectObject() {
         List<Recognition> currentRecognitions = tfod.getRecognitions();
