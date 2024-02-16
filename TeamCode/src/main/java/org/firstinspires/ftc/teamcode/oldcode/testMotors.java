@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 public class testMotors extends LinearOpMode{
 
     Lululu robot = new Lululu(this);
+    DcMotorEx climbRight;
 
     @Override
     public void runOpMode() {
@@ -73,17 +74,7 @@ public class testMotors extends LinearOpMode{
                 robot.setMotorPower(0,(DcMotorEx) hardwareMap.dcMotor.get("fr"));
             }
 
-            if(gamepad1.right_bumper){
-                score();
-            }
-            else if(gamepad1.left_bumper){
-                returnLift();
-            }
-            else{
-                robot.setLiftPower(0);
-            }
 
-            robot.addLiftPositions();
             telemetry.update();
         }
     }

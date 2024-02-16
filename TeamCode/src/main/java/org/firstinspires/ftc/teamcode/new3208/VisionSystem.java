@@ -30,6 +30,7 @@ public class VisionSystem {
     public static final Vector2d blueRight = new Vector2d(62.5,30);
 
     public static final int CAM_MIDDLE = 250;
+    public static final double DESIRED_TAG_DISTANCE = 12;
 
     private static final String TFOD_MODEL_ASSET1 = "model_20231206_154449.tflite";
     // Define the labels recognized in the model for TFOD (must be in training order!)
@@ -73,14 +74,36 @@ public class VisionSystem {
             return -1;
         }
     }
-    public double getTagAngle(){
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        if(currentDetections.size() != 0) {
-            return currentDetections.get(0).ftcPose.bearing;
+    public double getTagOffset(){
+        List<AprilTagDetection> detections = aprilTag.getDetections();
+        if(detections.size() != 0) {
+            return detections.get(0).ftcPose.x;
         }
         else{
             return -1;
         }
+    }
+    public double getTagDistanceError(){
+        return DESIRED_TAG_DISTANCE - getTagDistance();
+    }
+    public double getTagAngle(){
+        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
+        if(currentDetections.size() != 0) {
+            return currentDetections.get(0).ftcPose.yaw;
+        }
+        else{
+            return -1;
+        }
+    }
+    public Pose2d getRobotLocation(){
+        Vector2d tagLocation = redLeft;
+
+        double x = tagLocation.getX() + getTagDistance();
+        double y = tagLocation.getY();
+        return new Pose2d();
+    }
+    public double getTagAngleError(){
+        return 0-getTagAngle();
     }
     /**
      * Detects a team scoring element, returns the horizontal location in the camera view
@@ -89,22 +112,24 @@ public class VisionSystem {
      */
     public double hatLocation() {
         List<Recognition> recognitions = tfod.getRecognitions();
+        Recognition recognition;
         opMode.telemetry.addData("# Objects Detected", recognitions.size());
-        double x = -1;
+        double x;
         if(recognitions.size() != 0) {
             double highestConfidence = recognitions.get(0).getConfidence();
-            // Step through the list of recognitions and display info for each one.
+            // Step through the list of recognitions and display info for each one
+            recognition = recognitions.get(0);
             for (int i = 0; i < recognitions.size(); i++) {
                 if (recognitions.get(i).getConfidence() > highestConfidence) {
-                    x = (recognitions.get(i).getLeft() + recognitions.get(i).getRight()) / 2;
+                     recognition = recognitions.get(i);
                 }
-                    opMode.telemetry.addData("", " ");
-                opMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognitions.get(i).getLabel(), recognitions.get(i).getConfidence() * 100);
-                opMode.telemetry.addData("- Position", "%.0f", x);
-                opMode.telemetry.addData("- Size", "%.0f x %.0f", recognitions.get(i).getWidth(), recognitions.get(i).getHeight());
-                opMode.telemetry.update();
             }
+            x = (recognition.getLeft() + recognition.getRight()) / 2;
         }
+        else{
+            x = -1;
+        }
+
         return x;
     }
     /**

@@ -86,8 +86,8 @@ public class ScoringMechanisms {
 
 
     // Define Motor and Servo objects  (Make them private so they can't be accessed externally)
-    private DcMotorEx slideLeft, slideRight   = null;
-    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw, drone;
+    public DcMotorEx slideLeft, slideRight, climbRight, climbLeft;
+    public ServoImplEx armRight, armLeft, wrist, lowerClaw, upperClaw, drone, hookRight, hookLeft;
     private DigitalChannel limitSwitch;
     private DistanceSensor clawDetector;
 
@@ -99,25 +99,23 @@ public class ScoringMechanisms {
 
     // Define Drive constants.  Make them public so they CAN be used by the calling OpMode
 
-    static final double armOutPosition = 0;
-    static final double armInPosition = 1;
-    static final double upperClawOpen = 1;
-    static final double upperClawClosed = 0;
-    static final double lowerClawOpen = 0;
-    static final double lowerClawClosed = 1;
-    static final double WRIST_INTAKE_POSITION = 0;
-    static final double WRIST_UPWARD_POSITION = .25;
-    static final double WRIST_SCORING_POSITION = 1;
-
-    //SampleMecanumDrive drive = new SampleMecanumDrive(myOpMode.hardwareMap);
-
-
+    public static final double armOutPosition = 0;
+    public static final double armInPosition = 1;
+    public static final double upperClawOpen = .5;
+    public static final double upperClawClosed = 0;
+    public static final double lowerClawOpen = .5;
+    public static final double lowerClawClosed = 1;
+    public static final double WRIST_INTAKE_POSITION = 0;
+    public static final double WRIST_UPWARD_POSITION = .25;
+    public static final double WRIST_SCORING_POSITION = 1;
+    public static final double ARM_1_PIXEL_HEIGHT = .95;
+    public static final double ARM_3_PIXEL_HEIGHT = .92;
+    public static final double ARM_4_PIXEL_HEIGHT = .93;
 
 
 
     // Define a constructor that allows the OpMode to pass a reference to itself.
     public ScoringMechanisms (LinearOpMode opmode) {
-
         myOpMode = opmode;
     }
     /**
@@ -131,7 +129,8 @@ public class ScoringMechanisms {
 
         slideLeft   = myOpMode.hardwareMap.get(DcMotorEx.class, "slideLeft");
         slideRight  = myOpMode.hardwareMap.get(DcMotorEx.class, "slideRight");
-
+        climbRight  = myOpMode.hardwareMap.get(DcMotorEx.class,"climbRight");
+        climbLeft   = myOpMode.hardwareMap.get(DcMotorEx.class,"climbLeft");
 
         upperClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "upperClaw");
         lowerClaw   = myOpMode.hardwareMap.get(ServoImplEx.class, "lowerClaw");
@@ -139,6 +138,9 @@ public class ScoringMechanisms {
         armLeft     = myOpMode.hardwareMap.get(ServoImplEx.class, "armLeft");
         wrist       = myOpMode.hardwareMap.get(ServoImplEx.class, "wrist");
         drone       = myOpMode.hardwareMap.get(ServoImplEx.class,"drone");
+        hookLeft    = myOpMode.hardwareMap.get(ServoImplEx.class,"hookLeft");
+        hookRight   = myOpMode.hardwareMap.get(ServoImplEx.class,"hookRight");
+
 
         limitSwitch = myOpMode.hardwareMap.get(DigitalChannel.class,"limitSwitch");
         clawDetector= myOpMode.hardwareMap.get(DistanceSensor.class, "colorSensor");
@@ -159,17 +161,27 @@ public class ScoringMechanisms {
         // Define and initialize ALL installed servos.
 
 
-        disableArm();
         openLowerClaw(false);
         openUpperClaw(false);
-        homeLift();
-        wrist.setPosition(0);
         launchDrone(false);
         resetLiftEncoder();
 
 
         myOpMode.telemetry.addData(">", "Hardware Initialized");
         myOpMode.telemetry.update();
+    }
+
+    public void initLoop(){
+        if(!homeLift()) {
+            enableArm();
+            setArmPosition(.9);
+        }
+        else{
+            disableArm();
+        }
+        if(myOpMode.getRuntime() > .5){
+            wrist.setPosition(WRIST_UPWARD_POSITION);
+        }
     }
 
     public boolean isPixelIn(){
@@ -187,37 +199,43 @@ public class ScoringMechanisms {
 
 
     public void setLiftPosition(int position, double maxPower){
-        int error = position - slideRight.getCurrentPosition();
+        int error = position - slideLeft.getCurrentPosition();
         double kp = 0.01;
 
         double power = kp * error;
 
         if(Math.abs(power) > maxPower && power >= 0){
-            slideLeft.setPower(-maxPower);
-            slideRight.setPower(maxPower);
-        }
-        else if(Math.abs(power) > maxPower && power < 0){
             slideLeft.setPower(maxPower);
             slideRight.setPower(-maxPower);
         }
+        else if(Math.abs(power) > maxPower && power < 0){
+            slideLeft.setPower(-maxPower);
+            slideRight.setPower(maxPower);
+        }
         else{
-            slideLeft.setPower(-power);
-            slideRight.setPower(power);
+            slideLeft.setPower(power);
+            slideRight.setPower(-power);
         }
     }
 
     public void resetLiftEncoder(){
-        slideRight.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
-        slideRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        slideLeft.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        slideLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+    public void armToBack(){
+        setArmPosition(0.05);
+    }
+    public void armToFront(){
+        setArmPosition(.99);
     }
 
     public int getLiftPosition(){
-        return slideRight.getCurrentPosition();
+        return slideLeft.getCurrentPosition();
     }
 
     public void setLiftPower(double power){
-        slideLeft.setPower(power);
-        slideRight.setPower(-power);
+        slideLeft.setPower(-power);
+        slideRight.setPower(power);
     }
 
     public void openUpperClaw(boolean isOpen){
@@ -247,6 +265,10 @@ public class ScoringMechanisms {
         armRight.setPwmEnable();
         armLeft.setPwmEnable();
     }
+    public void setClimbPower(double power){
+        climbRight.setPower(power);
+        climbLeft.setPower(power);
+    }
 
     public void flipArm(boolean toScoringPosition){
         if(toScoringPosition){
@@ -258,6 +280,9 @@ public class ScoringMechanisms {
             armRight.setPosition(armInPosition);
             armLeft.setPosition(1-armInPosition);
         }
+    }
+    public boolean getLimitSwitch(){
+        return limitSwitch.getState();
     }
     public void wristIntakePosition(boolean toIntakePosition){
         if(toIntakePosition){
@@ -290,7 +315,7 @@ public class ScoringMechanisms {
 
     //return true if lift is at home? not sure please check which one it is
     public boolean homeLift() {
-        if(!limitSwitch.getState()){
+        if(limitSwitch.getState()){
             setLiftPower(-.5);
         }
         else{
@@ -299,6 +324,16 @@ public class ScoringMechanisms {
 
         }
         return !limitSwitch.getState();
+    }
+    public void setHooks(boolean hooksEngaged){
+        if(hooksEngaged) {
+            hookLeft.setPosition(0);
+            hookRight.setPosition(1);
+        }
+        else{
+            hookLeft.setPosition(.4);
+            hookRight.setPosition(.6);
+        }
     }
 
     public void wristOuttakeposition() {

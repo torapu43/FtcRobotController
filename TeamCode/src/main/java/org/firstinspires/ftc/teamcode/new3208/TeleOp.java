@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.new3208;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.vision.VisionPortal;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
-import java.util.List;
-
-@TeleOp
-public class SlightlyNewerTeleOp extends LinearOpMode {
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp
+public class TeleOp extends LinearOpMode {
     ScoringMechanisms lu3 = new ScoringMechanisms(this);
     AprilTagProcessor aprilTag;
-    VisionPortal visionPortal;
+    VisionSystem vision;
 
     boolean armOut = false;
     boolean clawDown = false;
@@ -36,8 +30,6 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
     //arm height 2 = 2 pixels off the ground to pick up top of a stack
     int armHeight = 0;
 
-    boolean lastArmButtonState;
-    boolean lastWristButton;
     boolean liftHoming;
     boolean inStackSequence;
     boolean lastStackButton;
@@ -64,6 +56,9 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
         drive = new SampleMecanumDrive(hardwareMap);
         boolean switchToDrive = false;
         boolean leaveScoring = false;
+        while(opModeInInit()){
+            lu3.initLoop();
+        }
 
         waitForStart();
         while(opModeIsActive()) {
@@ -78,6 +73,8 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
             boolean openTop     = gamepad2.y;
             boolean openBottom  = gamepad2.a;
             boolean flipArm     = gamepad2.left_bumper;
+
+
 
             driveFieldCentric();
             //intaking state
@@ -94,6 +91,16 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
                 }
                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
 
+                if(gamepad2.dpad_down){
+                    armHeight = 0;
+                }
+                else if(gamepad2.dpad_right || gamepad2.dpad_left){
+                    armHeight = 1;
+                }
+                else if(gamepad2.dpad_up){
+                    armHeight = 2;
+                }
+
                 if(armHeight == 0) {
                     //disable arm to grab pixels on the ground
                     lu3.disableArm();
@@ -101,12 +108,12 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
                 else if(armHeight == 1){
                     //adjust to height where claw is higher than 1 pixel
                     lu3.enableArm();
-                    lu3.setArmPosition(.1);
+                    lu3.setArmPosition(lu3.ARM_1_PIXEL_HEIGHT);
                 }
                 else{
                     //adjust to 5 pixel height to pick up from stacks
                     lu3.enableArm();
-                    lu3.setArmPosition(lu3.WRIST_UPWARD_POSITION);
+                    lu3.setArmPosition(lu3.ARM_3_PIXEL_HEIGHT);
                 }
 
                 //switch to driving state
@@ -121,11 +128,12 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
             }
             //driving state
             else if(state == 2){
+                lu3.homeLift();
                 telemetry.addData("a button", grabStack);
                 telemetry.update();
                 if(grabStack){
                     lu3.enableArm();
-                    lu3.setArmPosition(.98);
+                    lu3.setArmPosition(lu3.ARM_1_PIXEL_HEIGHT - 0.01);
                     lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                 }
                 if(fallingEdge(grabStack,lastStackButton)){
@@ -144,8 +152,16 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
                         lu3.openUpperClaw(false);
                     }
                 }
+                if(gamepad1.left_trigger >= 0.9){
+                    lu3.launchDrone(true);
+                }
+                //switch to climb state
+                if(gamepad2.right_trigger == 1 && gamepad2.left_trigger == 1){
+                    state =4;
+                }
                 //switch to intake state
                 if(gamepad2.a){
+                    armHeight = 0;
                     state = 1;
                 }
                 //switch to outtake state
@@ -160,13 +176,22 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
             *   outtake state
             */
 
-            else{
+            else if(state == 3){
                 if(!leaveScoring) {
                     lu3.setArmPosition(0.1);
+                    if(!lu3.getLimitSwitch() && lift < 0){
+                        lu3.setLiftPower(0);
+                    }
+                    else {
+                        lu3.setLiftPower(lift);
+                    }
+                    if(gamepad1.a){
+                        driveScoring();
+                    }
                 }
 
                 if(armDelay.time() > 1){
-                    lu3.wrist.setPosition(lu3.WRIST_SCORING_POSITION);
+
 
                     if(openBottom){
                         bottomDropped = true;
@@ -182,24 +207,57 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
                         leaveScoring = true;
                     }
                     if(leaveScoring){
-                        lu3.setArmPosition(1);
+                        lu3.setArmPosition(.97);
                         lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
-                        if(armDelay2.time() > 1.5){
+                        lu3.homeLift();
+                        if(armDelay2.time() > .25){
                             topDropped = false;
                             bottomDropped = false;
+                        }
+                        if(armDelay2.time() > 1.5){
                             leaveScoring = false;
                             state = 2;
                         }
                     }
                     else{
+                        lu3.wrist.setPosition(lu3.WRIST_SCORING_POSITION);
                         armDelay2.reset();
                     }
                 }
+            }
+            //climbing state
+            else{
+                telemetry.addData("lift position",lu3.getLiftPosition());
+                telemetry.addData("pressed",lu3.getLimitSwitch());
+
+                lu3.setHooks(true);
+                lu3.setArmPosition(.98);
+                if(!lu3.getLimitSwitch() && lift < 0){
+                    lu3.setLiftPower(0);
+                }
+                else if (!gamepad2.a){
+                    lu3.setLiftPower(lift);
+                }
+                if(gamepad2.a){
+                    lu3.setLiftPosition(-280,.5);
+                }
 
 
+                if(gamepad2.b){
+                    lu3.setClimbPower(1);
+                    lu3.homeLift();
+                }
+                else {
+                    lu3.setClimbPower(gamepad2.right_trigger - gamepad2.left_trigger);
+                }
             }
 
-            lastArmButtonState = flipArm;
+            telemetry.addData("left", gamepad2.left_trigger);
+            telemetry.addData("right", gamepad2.right_trigger);
+            telemetry.update();
+        }
+        if(!lu3.getLimitSwitch()){
+            lu3.resetLiftEncoder();
         }
     }
 
@@ -241,13 +299,28 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
         // Read pose
         Pose2d poseEstimate = RobotPose.currentPose;
         double error;
+        double rotError;
+        double kp = .1;
+        double rotKp = .1;
 
+        if(vision.getTagDistance() != -1){
+            error = vision.getTagDistanceError();
+        }
+        else{
+            error = 0;
+        }
+        if(vision.getTagAngle() != 0){
+            rotError = vision.getTagAngleError();
+        }
+        else{
+            rotError = 0;
+        }
 
         // Create a vector from the gamepad x/y inputs
         // Then, rotate that vector by the inverse of that heading
         Vector2d input = new Vector2d(
                 fwd,
-                0
+                (error * kp)
         ).rotated(-poseEstimate.getHeading());
 
         // Pass in the rotated input + right stick value for rotation
@@ -256,7 +329,7 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
                 new Pose2d(
                         input.getX(),
                         input.getY(),
-                        turn
+                        rotError * rotKp
                 )
         );
 
@@ -291,34 +364,5 @@ public class SlightlyNewerTeleOp extends LinearOpMode {
         drive.update();
     }
 
-    public void initAprilTag(){
-        // Create the AprilTag processor by using a builder.
-        aprilTag = new AprilTagProcessor.Builder().build();
 
-        // Adjust Image Decimation to trade-off detection-range for detection-rate.
-        // eg: Some typical detection data using a Logitech C920 WebCam
-        // Decimation = 1 ..  Detect 2" Tag from 10 feet away at 10 Frames per second
-        // Decimation = 2 ..  Detect 2" Tag from 6  feet away at 22 Frames per second
-        // Decimation = 3 ..  Detect 2" Tag from 4  feet away at 30 Frames Per Second
-        // Decimation = 3 ..  Detect 5" Tag from 10 feet away at 30 Frames Per Second
-        // Note: Decimation can be changed on-the-fly to adapt during a match.
-        aprilTag.setDecimation(2);
-
-        // Create the vision portal by using a builder.
-            visionPortal = new VisionPortal.Builder()
-                    .setCamera(BuiltinCameraDirection.BACK)
-                    .addProcessor(aprilTag)
-                    .build();
-    }
-
-    public double aprilTagDistance(){
-        List<AprilTagDetection> detections = aprilTag.getDetections();
-        return detections.get(0).ftcPose.range;
-    }
-    public double aprilTagAngle(){
-        double angle;
-        List<AprilTagDetection> currentDetections = aprilTag.getDetections();
-        angle = currentDetections.get(0).ftcPose.bearing;
-        return angle;
-    }
 }
