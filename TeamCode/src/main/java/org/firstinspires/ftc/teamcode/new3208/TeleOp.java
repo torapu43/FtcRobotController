@@ -13,7 +13,6 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 public class TeleOp extends LinearOpMode {
     ScoringMechanisms lu3 = new ScoringMechanisms(this);
-    AprilTagProcessor aprilTag;
     VisionSystem vision;
 
     boolean armOut = false;

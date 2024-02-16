@@ -30,7 +30,7 @@ public class RedAuto extends LinearOpMode {
     boolean underTruss = true;
     int pixelPlacement = 1;
     boolean whitePixelsOnRight = false;
-    int randomization;
+    int randomization = 2;
 
     public void runOpMode(){
         lu3 = new ScoringMechanisms(this);
@@ -49,7 +49,15 @@ public class RedAuto extends LinearOpMode {
         drive.setPoseEstimate(startingPosition);
         while(opModeInInit()){
             //randomization = detectObject();
-            randomization = 3;
+            if(gamepad1.dpad_left){
+                randomization = 1;
+            }
+            else if(gamepad1.dpad_down || gamepad1.dpad_up){
+                randomization = 2;
+            }
+            else if(gamepad1.dpad_right){
+                randomization = 3;
+            }
             telemetry.addData("randomization",randomization);
             telemetry.update();
         }
@@ -183,28 +191,79 @@ public class RedAuto extends LinearOpMode {
             TrajectorySequence scoreYellow;
 
             if(!closeSide){
-
-                TrajectorySequence cross1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                        .lineToLinearHeading(new Pose2d(-59,-12,Math.toRadians(180)))
-                        .lineToConstantHeading(new Vector2d(30,-16))
-                        .build();
+                TrajectorySequence cross1;
+                if(underTruss) {
+                    cross1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(new Pose2d(-59, -12, Math.toRadians(180)))
+                            .lineToConstantHeading(new Vector2d(30, -16))
+                            .build();
+                }
+                else{
+                    cross1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                            .lineToLinearHeading(new Pose2d(-59, -12, Math.toRadians(180)))
+                            .lineToConstantHeading(new Vector2d(30, -16))
+                            .build();
+                }
 
                 drive.followTrajectorySequence(cross1);
 
                 switch(randomization){
                     case 1:
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .addTemporalMarker(() ->{
+                                    armToBack();
+                                })
+                                .lineToConstantHeading(new Vector2d(52,-32))
+                                .addTemporalMarker(()->{
+                                    drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
+                                    sleep(500);
+                                    lu3.openLowerClaw(true);
+                                    lu3.openUpperClaw(true);
+                                    lu3.armToFront();
+                                    lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
+                                    sleep(500);
+                                })
+                                .lineToConstantHeading(new Vector2d(54,-62))
+                                .lineTo(new Vector2d(60,-62))
                                 .build();
                         break;
                     case 2:
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .addTemporalMarker(() ->{
+                                    armToBack();
+                                })
+                                .lineToConstantHeading(new Vector2d(52,-36))
+                                .addTemporalMarker(()->{
+                                    drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
+                                    sleep(500);
+                                    lu3.openLowerClaw(true);
+                                    lu3.openUpperClaw(true);
+                                    lu3.armToFront();
+                                    lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
+                                    sleep(500);
+                                })
+                                .lineToConstantHeading(new Vector2d(54,-62))
+                                .lineTo(new Vector2d(60,-62))
                                 .build();
                         break;
                     default:
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
+                                .addTemporalMarker(this::armToBack)
+                                .lineToConstantHeading(new Vector2d(52,-41))
+                                .addTemporalMarker(()->{
+                                    drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
+                                    sleep(500);
+                                    lu3.openLowerClaw(true);
+                                    lu3.openUpperClaw(true);
+                                    lu3.armToFront();
+                                    lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
+                                    sleep(500);
+                                })
+                                .lineToConstantHeading(new Vector2d(54,-62))
+                                .lineTo(new Vector2d(60,-62))
                                 .build();
                         break;
                 }
@@ -212,6 +271,13 @@ public class RedAuto extends LinearOpMode {
             else{
                 switch(randomization){
                     case 1:
+                        double y;
+                        if(pixelPlacement == 1){
+                            y = -62;
+                        }
+                        else{
+                            y = -65;
+                        }
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() ->{
                                     armToBack();
@@ -277,6 +343,35 @@ public class RedAuto extends LinearOpMode {
         }
 
     }
+    private void selection(){
+        if(gamepad1.a){
+            if(gamepad1.right_bumper){
+                closeSide = true;
+            }
+            else if(gamepad1.left_bumper){
+                closeSide = false;
+            }
+        }
+        if(gamepad1.b) {
+            if (gamepad1.right_bumper) {
+                underTruss = true;
+            }
+            else if (gamepad1.left_bumper) {
+                underTruss = false;
+            }
+        }
+        if(gamepad1.y) {
+            if (gamepad1.right_bumper && gamepad1.left_bumper) {
+                pixelPlacement = 2;
+            }
+            else if (gamepad1.left_bumper) {
+                pixelPlacement = 1;
+            }
+            else if(gamepad1.right_bumper){
+                pixelPlacement = 3;
+            }
+        }
+    }
     private void telemetrySelection(){
         String side;
         String whitePixelSide;
@@ -309,10 +404,11 @@ public class RedAuto extends LinearOpMode {
                 pixelSide = "Middle";
         }
 
-        telemetry.addData("Side Chosen:", side);
-        telemetry.addData("Path Chosen", path);
-        telemetry.addData("Yellow Pixel placement", pixelSide);
-        telemetry.addData("White Pixel Placement", whitePixelSide);
+        telemetry.addData("(A) Side Chosen:", side);
+        telemetry.addData("(B) Path Chosen", path);
+        telemetry.addData("(Y) Yellow Pixel placement", pixelSide);
+        telemetry.addData("Detection", randomization);
+        //telemetry.addData("White Pixel Placement", whitePixelSide);
         telemetry.update();
     }
     private void armToBack(){
