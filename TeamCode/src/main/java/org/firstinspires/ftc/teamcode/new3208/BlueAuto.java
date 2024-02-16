@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 @Autonomous
-public class RedAuto extends LinearOpMode {
+public class BlueAuto extends LinearOpMode {
     //Constants
     private static final double CLOSE_VISION_THRESHOLD = 320;
     private static final double FAR_VISION_THRESHOLD = 220;
@@ -57,23 +57,24 @@ public class RedAuto extends LinearOpMode {
             telemetry.addData("randomization",randomization);
         }
         if(closeSide){
-            startingPosition = new Pose2d(16.875, -64.4375, Math.toRadians(-90));
+            startingPosition = new Pose2d(16.875, 64.4375, Math.toRadians(90));
         }
         else{
-            startingPosition = new Pose2d(-40.875, -64.4375, Math.toRadians(-90));
+            startingPosition = new Pose2d(-40.875, 64.4375, Math.toRadians(90));
         }
         drive.setPoseEstimate(startingPosition);
+
         switch(randomization) {
-            case 1:
+            case 3:
                 //Hat on left
                 if(closeSide) {
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToSplineHeading(new Pose2d(17, -32, Math.toRadians(180)))
+                            .lineToSplineHeading(new Pose2d(17, 32, Math.toRadians(180)))
                             .addTemporalMarker(() -> {
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                             })
-                            .lineToConstantHeading(new Vector2d(12, -32))
+                            .lineToConstantHeading(new Vector2d(12, 32))
                             .addTemporalMarker(() -> {
                                 lu3.openLowerClaw(true);
                                 lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
@@ -84,15 +85,15 @@ public class RedAuto extends LinearOpMode {
                 else{
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToSplineHeading(new Pose2d(-46, -36, Math.toRadians(-80)))
-                            .lineToSplineHeading(new Pose2d(-50,-43,Math.toRadians(-90)))
+                            .lineToSplineHeading(new Pose2d(-46, 36, Math.toRadians(80)))
+                            .lineToSplineHeading(new Pose2d(-50,43,Math.toRadians(90)))
                             .addTemporalMarker(() ->{
                                 lu3.openLowerClaw(true);
                                 lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                 lu3.setArmPosition(lu3.ARM_4_PIXEL_HEIGHT);
                             })
-                            .lineToLinearHeading(new Pose2d(-57,-36,Math.toRadians(180)))
-                            .lineToLinearHeading(new Pose2d(-59,-36,Math.toRadians(180)))
+                            .lineToLinearHeading(new Pose2d(-57,36,Math.toRadians(180)))
+                            .lineToLinearHeading(new Pose2d(-59,36,Math.toRadians(180)))
                             .addTemporalMarker(() ->{
                                 drive.setDrivePower(new Pose2d(0,0,0));
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
@@ -112,7 +113,7 @@ public class RedAuto extends LinearOpMode {
                 if(closeSide) {
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToSplineHeading(new Pose2d(27, -24, Math.toRadians(180)))
+                            .lineToSplineHeading(new Pose2d(26, 24, Math.toRadians(180)))
                             .addTemporalMarker(1, () -> {
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                             })
@@ -127,14 +128,14 @@ public class RedAuto extends LinearOpMode {
                 else{
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToLinearHeading(new Pose2d(-40, -32, Math.toRadians(-110)))
+                            .lineToLinearHeading(new Pose2d(-40, 32, Math.toRadians(110)))
                             .addTemporalMarker(() ->{
                                 lu3.openLowerClaw(true);
                                 lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                 lu3.setArmPosition(lu3.ARM_4_PIXEL_HEIGHT);
                             })
-                            .lineToLinearHeading(new Pose2d(-55,-36,Math.toRadians(180)))
-                            .lineToConstantHeading(new Vector2d(-59,-36))
+                            .lineToLinearHeading(new Pose2d(-55,38,Math.toRadians(180)))
+                            .lineToConstantHeading(new Vector2d(-59,38))
                             .addTemporalMarker(() ->{
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                                 sleep(700);
@@ -146,12 +147,12 @@ public class RedAuto extends LinearOpMode {
                             .build();
                 }
                 break;
-            case 3:
+            case 1:
                 //Hat on right
                 if(closeSide) {
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToSplineHeading(new Pose2d(36, -32, Math.toRadians(180)))
+                            .lineToSplineHeading(new Pose2d(36, 32, Math.toRadians(180)))
                             .addTemporalMarker(1, () -> {
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                             })
@@ -165,15 +166,15 @@ public class RedAuto extends LinearOpMode {
                 else {
                     purplePixel = drive.trajectorySequenceBuilder(startingPosition)
                             .setReversed(true)
-                            .lineToSplineHeading(new Pose2d(-38, -40, Math.toRadians(-130)))
-                            .lineToSplineHeading(new Pose2d(-34, -33, Math.toRadians(180)))
+                            .lineToSplineHeading(new Pose2d(-38, 40, Math.toRadians(130)))
+                            .lineToSplineHeading(new Pose2d(-34, 33, Math.toRadians(180)))
                             .addTemporalMarker(() -> {
                                 lu3.openLowerClaw(true);
                                 lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                 lu3.setArmPosition(lu3.ARM_4_PIXEL_HEIGHT);
                             })
-                            .lineToSplineHeading(new Pose2d(-55, -41,Math.toRadians(180)))
-                            .lineToConstantHeading(new Vector2d(-59, -41))
+                            .lineToSplineHeading(new Pose2d(-55, 41,Math.toRadians(180)))
+                            .lineToConstantHeading(new Vector2d(-59, 41))
                             .addTemporalMarker(() -> {
                                 lu3.wrist.setPosition(lu3.WRIST_INTAKE_POSITION);
                                 sleep(700);
@@ -196,26 +197,26 @@ public class RedAuto extends LinearOpMode {
                 TrajectorySequence cross1;
                 if(underTruss) {
                     cross1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(new Pose2d(-59, -12, Math.toRadians(180)))
+                            .lineToLinearHeading(new Pose2d(-59, 12, Math.toRadians(180)))
                             .lineToConstantHeading(new Vector2d(30, -16))
                             .build();
                 }
                 else{
                     cross1 = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                            .lineToLinearHeading(new Pose2d(-50, -60, Math.toRadians(180)))
-                            .lineToConstantHeading(new Vector2d(30, -60))
+                            .lineToLinearHeading(new Pose2d(-50, 60, Math.toRadians(180)))
+                            .lineToConstantHeading(new Vector2d(30, 60))
                             .build();
                 }
 
                 drive.followTrajectorySequence(cross1);
 
                 switch(randomization){
-                    case 1:
+                    case 3:
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() ->{
-                                    armToBackHigh();
+                                    armToBack();
                                 })
-                                .lineToConstantHeading(new Vector2d(52,-32))
+                                .lineToConstantHeading(new Vector2d(52,32))
                                 .addTemporalMarker(()->{
                                     drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
@@ -226,32 +227,22 @@ public class RedAuto extends LinearOpMode {
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
                                 })
-                                .lineToConstantHeading(new Vector2d(50,-62))
-                                .lineTo(new Vector2d(60,-62))
+                                .lineToConstantHeading(new Vector2d(50,62))
+                                .lineTo(new Vector2d(60,62))
                                 .build();
                         break;
                     case 2:
-                        int y;
-                        if(whitePixelsOnRight){
-                            y = 36;
-                        }
-                        else{
-                            y = 28;
-                        }
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() ->{
-                                    armToBackHigh();
+                                    armToBack();
                                 })
+                                .lineToConstantHeading(new Vector2d(52,36))
+                                .addTemporalMarker(()->{
+                                    drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
-                                .lineToConstantHeading(new Vector2d(54,y))
-                                .addTemporalMarker(()-> {
-                                            drive.setWeightedDrivePower(new Pose2d(0, 0, 0));
-
-                                            sleep(500);
-                                            lu3.openLowerClaw(true);
-                                        })
-                                .lineToConstantHeading(new Vector2d(54,30))
-                                .addTemporalMarker(() ->{
+                                    sleep(500);
+                                    lu3.openLowerClaw(true);
+                                    lu3.openUpperClaw(true);
                                     lu3.armToFront();
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
@@ -262,8 +253,8 @@ public class RedAuto extends LinearOpMode {
                         break;
                     default:
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
-                                .addTemporalMarker(this::armToBackHigh)
-                                .lineToConstantHeading(new Vector2d(52,-41))
+                                .addTemporalMarker(this::armToBack)
+                                .lineToConstantHeading(new Vector2d(52,41))
                                 .addTemporalMarker(()->{
                                     drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
@@ -274,27 +265,27 @@ public class RedAuto extends LinearOpMode {
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
                                 })
-                                .lineToConstantHeading(new Vector2d(50,-62))
-                                .lineTo(new Vector2d(60,-62))
+                                .lineToConstantHeading(new Vector2d(50,62))
+                                .lineTo(new Vector2d(60,62))
                                 .build();
                         break;
                 }
             }
             else{
                 switch(randomization){
-                    case 1:
+                    case 3:
                         double y;
                         if(pixelPlacement == 1){
-                            y = -62;
+                            y = 62;
                         }
                         else{
-                            y = -65;
+                            y = 65;
                         }
                         scoreYellow = drive.trajectorySequenceBuilder(drive.getPoseEstimate())
                                 .addTemporalMarker(() ->{
                                     armToBack();
                                 })
-                                .lineToConstantHeading(new Vector2d(52,-32))
+                                .lineToConstantHeading(new Vector2d(52,32))
                                 .addTemporalMarker(()->{
                                     drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
@@ -305,8 +296,8 @@ public class RedAuto extends LinearOpMode {
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
                                 })
-                                .lineToConstantHeading(new Vector2d(50,-62))
-                                .lineTo(new Vector2d(60,-62))
+                                .lineToConstantHeading(new Vector2d(50,62))
+                                .lineTo(new Vector2d(60,62))
                                 .build();
                         break;
                     case 2:
@@ -314,7 +305,7 @@ public class RedAuto extends LinearOpMode {
                                 .addTemporalMarker(() ->{
                                     armToBack();
                                 })
-                                .lineToConstantHeading(new Vector2d(52,-36))
+                                .lineToConstantHeading(new Vector2d(52,36))
                                 .addTemporalMarker(()->{
                                     drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
@@ -325,8 +316,8 @@ public class RedAuto extends LinearOpMode {
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
                                 })
-                                .lineToConstantHeading(new Vector2d(50,-62))
-                                .lineTo(new Vector2d(60,-62))
+                                .lineToConstantHeading(new Vector2d(50,62))
+                                .lineTo(new Vector2d(60,62))
                                 .build();
                         break;
                     default:
@@ -334,7 +325,7 @@ public class RedAuto extends LinearOpMode {
                                 .addTemporalMarker(() ->{
                                     armToBack();
                                 })
-                                .lineToConstantHeading(new Vector2d(52,-42))
+                                .lineToConstantHeading(new Vector2d(52,41))
                                 .addTemporalMarker(()->{
                                     drive.setWeightedDrivePower(new Pose2d(0,0,0));
 
@@ -345,8 +336,8 @@ public class RedAuto extends LinearOpMode {
                                     lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
                                     sleep(500);
                                 })
-                                .lineToConstantHeading(new Vector2d(50,-62))
-                                .lineTo(new Vector2d(60,-62))
+                                .lineToConstantHeading(new Vector2d(50,62))
+                                .lineTo(new Vector2d(60,62))
                                 .build();
                         break;
                 }
@@ -425,12 +416,6 @@ public class RedAuto extends LinearOpMode {
     }
     private void armToBack(){
         lu3.armToBack();
-        lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
-        sleep(500);
-        lu3.wrist.setPosition(lu3.WRIST_SCORING_POSITION);
-    }
-    private void armToBackHigh(){
-        lu3.armToBackHigh();
         lu3.wrist.setPosition(lu3.WRIST_UPWARD_POSITION);
         sleep(500);
         lu3.wrist.setPosition(lu3.WRIST_SCORING_POSITION);

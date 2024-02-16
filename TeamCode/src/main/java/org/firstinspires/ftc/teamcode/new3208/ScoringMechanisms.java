@@ -225,6 +225,9 @@ public class ScoringMechanisms {
     public void armToBack(){
         setArmPosition(0.05);
     }
+    public void armToBackHigh(){
+        setArmPosition(0.1);
+    }
     public void armToFront(){
         setArmPosition(.99);
     }

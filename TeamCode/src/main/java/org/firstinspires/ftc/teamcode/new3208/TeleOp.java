@@ -234,8 +234,13 @@ public class TeleOp extends LinearOpMode {
                 if(!lu3.getLimitSwitch() && lift < 0){
                     lu3.setLiftPower(0);
                 }
-                else if (!gamepad2.a){
-                    lu3.setLiftPower(lift);
+                else if (!gamepad2.a && !gamepad2.b){
+                    if(lu3.getLiftPosition() > -280) {
+                            lu3.setLiftPower(lift/2);
+                        }
+                    else{
+                        lu3.setLiftPower(0);
+                    }
                 }
                 if(gamepad2.a){
                     lu3.setLiftPosition(-280,.5);
@@ -258,6 +263,7 @@ public class TeleOp extends LinearOpMode {
         if(!lu3.getLimitSwitch()){
             lu3.resetLiftEncoder();
         }
+        RobotPose.update(drive);
     }
 
     public boolean risingEdge(boolean input, boolean lastInput){
