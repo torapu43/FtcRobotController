@@ -4,9 +4,9 @@ import java.util.Vector2D;
 class path {
   private static final double agressiveness = 0.5;
   
-  public ArrayList<Vector2D> controlPoints;
+  public Vector2D[] controlPoints;
 
-  public path(ArrayList<Vector2D> controlPoints){
+  public path(Vector2D[] controlPoints){
     this.controlPoints = controlPoints;
   }
   
