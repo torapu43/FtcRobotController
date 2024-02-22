@@ -2,7 +2,9 @@ import java.util.ArrayList;
 import java.util.Vector2D;
 
 class path {
-  private static final double agressiveness = 0.5;
+  public static final double agressiveness = 0.5;
+  public static final double deccelRadius = 6;
+  public static final double Kstatic = 0.014; //pulled from driveConstants.java
   
   public Vector2D[] controlPoints;
 
@@ -54,7 +56,20 @@ class path {
     error.normalize();
     error.mult(aggressiveness);
 
-    return normal.add(error).normalize();
+    Vector2D output = 
+      normal
+      .add(error)
+      .normalize();
+
+    double dist = distance(point);
+    if(dist <= decelRadius){
+      double t = dist / decelRadius;
+      output = 
+        output.mult(t)
+        .add(output.mult(Kstatic * (1 - t)));
+    }
+    
+    return output;
     
   }
 
@@ -62,7 +77,17 @@ class path {
     return vector(new Vector2D(point.getX(), point.getY()));
   }
 
+  public double distance(Vector2D point){
+    Vector2D endpoint = controlPoints[controlPoints.length - 1];
+    return Math.sqrt(Math.pow(endpoint.x - point.x, 2) + Math.pow(endpoint.y - point.y, 2));
+  }
+
+  public Vector2D getEnd(){
+    return controlPoints[controlPoints.length - 1];
+  }
+
   public boolean equals(path other){
     return this.controlPoints.equals(other.controlPoints);
   }
+  
 }

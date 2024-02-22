@@ -31,6 +31,26 @@ class Spline extends path {
     this.controlPoints[3] = end;
   }
 
+  public void addControlPoint(int index, Vector2D controlPoint){
+    this.controlPoints[index] = controlPoint;
+  }
+
+  public Spline withStart(double x, double y){
+    return this.copy().addStart(new Vector2D(x, y));
+  }
+
+  public Spline withEnd(double x, double y){
+    return this.copy().addEnd(new Vector2D(x, y));
+  }
+
+  public Spline withControlPoint(int index, int x, int y){
+    return this.copy().addControlPoint(index, new Vector2D(x, y));
+  }
+
+  public Spline copy(){
+    return new Line(this.controlPoints.clone());
+  }
+
   public void addStartVelocity(Vector2D controlPoint){
     this.controlPoints[1] = controlPoint;
   }
