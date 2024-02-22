@@ -4,6 +4,7 @@ class PathSequence {
   public static final double deadBand = 0.1;
   
   public ArrayList<Path> paths;
+  
   public int currentPath;
   public Vector2D start;
 
@@ -16,6 +17,10 @@ class PathSequence {
 
   public PathSequence(Vector2D start){
     this.start = start;
+  }
+
+  public PathSequence(double x, double y){
+    this.start = new Vector2D(x, y);
   }
 
   public PathSequence LineTo(double x, double y){
@@ -106,7 +111,7 @@ class PathSequence {
 
   public PathSequence SplineTo(Spline spline){
     Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
-    output(paths.size()) = spline;
+    output(paths.size()) = spline.withEnd(controlPoints[controlPoints.length - 1].getEnd());
     return new PathSequence(output);
   }
   

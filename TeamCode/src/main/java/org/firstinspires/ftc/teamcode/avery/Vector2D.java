@@ -47,6 +47,10 @@ class Vector2D{
     return this.sub(origin).rotate(angle).add(origin);
   }
 
+  public double heading(){
+    return Math.atan2(this.y, this.x);
+  }
+
   public Vector2D toUnitVector(){
     return this.normalize();
   }

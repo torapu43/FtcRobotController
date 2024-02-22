@@ -19,16 +19,18 @@ public class LocalizerTest extends LinearOpMode {
 
     //Objects
   SampleMecanumDrive drive;
-  Spline path;
+  PathSequence path;
 
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
-    path = new Spline()
-      .withStartPoint(0, 0)
-      .withEndPoint(24, 24)
-      .withControlPoint(1, 0, 10)
-      .withControlPoint(2, 30, 30);
-
+    
+    path = new PathSequence(0, 0)
+      .LineTo(24, 0)
+      .SplineTo(new Spline()
+                .withEnd(36, 12)
+                .withControlPoint(1, 24, 0)
+                .withControlPoint(2, 36, 12));
+    
     while(opModeInInit()){
       drive.setPoseEstimate(new Pose2d(0,0,0));
     }
@@ -37,7 +39,7 @@ public class LocalizerTest extends LinearOpMode {
     if(opModeIsActive()){
       while(opModeIsActive()){
         vector = path.vector(drive.getPoseEstimate());
-        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, 0));
+        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, vector.normalize().heading()));
         telemetry.addData("location", drive.getPoseEstimate());
       }
     }
