@@ -58,6 +58,10 @@ class path {
     
   }
 
+  public Vector2D vector(Pose2D point){
+    return vector(new Vector2D(point.getX(), point.getY()));
+  }
+
   public boolean equals(path other){
     return this.controlPoints.equals(other.controlPoints);
   }
