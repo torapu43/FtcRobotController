@@ -8,6 +8,18 @@ class path {
   
   public Vector2D[] controlPoints;
 
+  public headingPID(Pose2D robot){
+    
+  }
+
+  public headingPID(Pose2D robot, double distance, double end){
+    
+  }
+
+  public headingPID(Pose2D robot, double distance, double end, double transit){
+    
+  }
+
   public path(Vector2D[] controlPoints){
     this.controlPoints = controlPoints;
   }
