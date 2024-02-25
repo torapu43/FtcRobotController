@@ -34,7 +34,8 @@ public class LocalizerTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
-        vector = path.vector(drive.getPoseEstimate());
+        Pose2D est = drive.getPoseEstimate();
+        Vector2D vector = path.vector(est.getX(), est.getY());
         drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, 0));
         telemetry.addData("location", drive.getPoseEstimate());
       }

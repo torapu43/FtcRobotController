@@ -30,16 +30,17 @@ public class LocalizerTest extends LinearOpMode {
                 .withEnd(36, 12)
                 .withControlPoint(1, 24, 0)
                 .withControlPoint(2, 36, 12));
-    
-    while(opModeInInit()){
-      drive.setPoseEstimate(new Pose2d(0,0,0));
-    }
 
+    drive.setPoseEstimate(new Pose2d(0,0,0));
+
+
+    
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
-        vector = path.vector(drive.getPoseEstimate());
-        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, vector.normalize().heading()));
+        Pose2D est = drive.getPoseEstimate();
+        Vector2D vector = path.vector(est.getX(), est.getY());
+        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, 0));
         telemetry.addData("location", drive.getPoseEstimate());
       }
     }
