@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 @Autonomous
-public class LocalizerTest extends LinearOpMode {
+public class SequenceTest extends LinearOpMode {
 
     //Objects
   SampleMecanumDrive drive;

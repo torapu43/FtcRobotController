@@ -1,4 +1,9 @@
-class Spline extends path {
+package org.firstinspires.ftc.teamcode.avery;
+
+import org.firstinspires.ftc.teamcode.avery.Path;
+import org.firstinspires.ftc.teamcode.avery.Vector2D;
+
+class Spline extends Path {
   private Vector2D[] controlPoints;
   private Vector2D term3;
   private Vector2D term4;

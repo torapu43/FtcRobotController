@@ -1,3 +1,5 @@
+package org.firstinspires.ftc.teamcode.avery;
+
 /**
 * chainable vector class written by replit ghostwriter
 * replit ghostwriter is amazing

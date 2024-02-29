@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.avery;
 
+import org.firstinspires.ftc.teamcode.avery.;
+
 import com.acmerobotics.dashboard.message.redux.StopOpMode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Queue;
 
 @Autonomous
-public class LocalizerTest extends LinearOpMode {
+public class FollowerTest extends LinearOpMode {
 
     //Objects
   SampleMecanumDrive drive;

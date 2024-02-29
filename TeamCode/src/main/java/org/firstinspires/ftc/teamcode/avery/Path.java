@@ -1,7 +1,10 @@
-import java.util.ArrayList;
-import java.util.Vector2D;
+package org.firstinspires.ftc.teamcode.avery;
 
-class path {
+import java.util.ArrayList;
+import org.firstinspires.ftc.teamcode.avery.Vector2D;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+public class Path {
   public static final double agressiveness = 0.5;
   public static final double deccelRadius = 6;
   public static final double Kstatic = 0.014; //pulled from driveConstants.java
@@ -19,7 +22,7 @@ class path {
   
   public Vector2D[] controlPoints;
 
-  public double headingPID(Pose2D robot, double distance, Vector2D follow){
+  public double headingPID(Pose2d robot, double distance, Vector2D follow){
     int target;
     switch(headingPID_type){
       case STATIC:{
@@ -68,7 +71,7 @@ class path {
   * @param t [0 - 1] t parameter
   */
   public Vector2D derivative(double t){
-    return new Vector2d(0, 0);
+    return new Vector2D(0, 0);
   }
 
   /** 
@@ -81,8 +84,8 @@ class path {
   /**
   * @param point a vector representing the robot's coorinates
   */
-  public Vector2D closestT(Vector2D point){
-    return new Vector2D(0, 0);
+  public double closestT(Vector2D point){
+    return 0;
   }
 
   /** 
@@ -119,14 +122,14 @@ class path {
   }
 
 
-  public Pose2D powers(Pose2D robot){
+  public Pose2d powers(Pose2d robot){
   
     Vector2D point = new Vector2D(robot.getX(), robot.getY());
     Vector2D closestT = closestT(point);
     Vector2D closest = point(closestT);
     Vector2D normal = closest.sub(point);
   
-    Vector2D error = newVector2D(0, 0);
+    Vector2D error = new Vector2D(0, 0);
     if(closestT < 1){
       error = derivative(closestT);
     }
@@ -146,7 +149,7 @@ class path {
         .add(output.mult(Kstatic * (1 - t)));
     }
   
-    return new Pose2D(output.x, output.y, headingPID(robot, dist, output));
+    return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
   
   }
 

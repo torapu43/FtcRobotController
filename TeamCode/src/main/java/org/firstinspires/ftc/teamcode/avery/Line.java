@@ -1,4 +1,8 @@
-class Line extends path {
+package org.firstinspires.ftc.teamcode.avery;
+
+import org.firstinspires.ftc.teamcode.avery.Path;
+
+public class Line extends Path {
   private Vector2D[] controlPoints;
 
   public line(Vector2D[] controlPoints){
