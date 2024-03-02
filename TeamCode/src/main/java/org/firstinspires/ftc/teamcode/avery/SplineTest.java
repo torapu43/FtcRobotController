@@ -1,18 +1,10 @@
 package org.firstinspires.ftc.teamcode.avery;
 
-import com.acmerobotics.dashboard.message.redux.StopOpMode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 
-import java.util.ArrayList;
-import java.util.Queue;
 
 @Autonomous
 public class SplineTest extends LinearOpMode {
@@ -24,8 +16,8 @@ public class SplineTest extends LinearOpMode {
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
     path = new Spline()
-      .withStartPoint(0, 0)
-      .withEndPoint(24, 24)
+      .withStart(0, 0)
+      .withEnd(24, 24)
       .withControlPoint(1, 0, 10)
       .withControlPoint(2, 30, 30);
 
@@ -36,9 +28,9 @@ public class SplineTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
-        Pose2D est = drive.getPoseEstimate();
-        vector = path.vector(est.getX(), est.getY());
-        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, 0));
+        Pose2d est = drive.getPoseEstimate();
+        Pose2d follow = path.vector(est);
+        drive.setWeightedDrivePower(follow);
         telemetry.addData("location", drive.getPoseEstimate());
       }
     }

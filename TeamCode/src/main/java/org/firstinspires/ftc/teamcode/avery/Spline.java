@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.avery.Vector2D;
 
 class Spline extends Path {
   private Vector2D[] controlPoints;
+  private Vector2D term2;
   private Vector2D term3;
-  private Vector2D term4;
   
   public Spline(Vector2D[] controlPoints){
     super(controlPoints);
@@ -28,6 +28,10 @@ class Spline extends Path {
     //controlPoints = new Vector2D[4];
   }
 
+  public Spline(Vector2D start, Vector2D cp1, Vector2D cp2, Vector2D end){
+    super(new Vector2D[]{start, cp1, cp1, end});
+  }
+
   public void addStart(Vector2D start){
     this.controlPoints[0] = start;
   }
@@ -41,28 +45,38 @@ class Spline extends Path {
   }
 
   public Spline withStart(double x, double y){
-    return this.copy().addStart(new Vector2D(x, y));
+    return withStart(new Vector2D(x, y));
+  }
+  public Spline withStart(Vector2D start){
+    Spline output = this.copy();
+    output.addStart(start);
+    return output;
   }
 
   public Spline withEnd(double x, double y){
-    return this.copy().addEnd(new Vector2D(x, y));
+    return withEnd(new Vector2D(x, y));
+  }
+
+  public Spline withEnd(Vector2D end){
+    Spline output = this.copy();
+    output.addEnd(end);
+    return output;
   }
 
   public Spline withControlPoint(int index, int x, int y){
-    return this.copy().addControlPoint(index, new Vector2D(x, y));
+    Spline output = this.copy();
+    output.addControlPoint(index, new Vector2D(x, y));
+    return output;
   }
 
   public Spline copy(){
-    return new Line(this.controlPoints.clone());
+    return new Spline(this.controlPoints.clone());
   }
 
   public void addStartVelocity(Vector2D controlPoint){
     this.controlPoints[1] = controlPoint;
   }
 
-  public 
-
-  @override
   public Vector2D point(double t){
     return 
       controlPoints[0]
@@ -71,7 +85,6 @@ class Spline extends Path {
       .add(term3.mult(t * t * t));
   }
 
-  @override
   public Vector2D derivative(double t){
     return 
       controlPoints[1]
@@ -82,11 +95,22 @@ class Spline extends Path {
   /**
   * @param point a vector representing the robot's coorinates
   * @returns a unit vector representing the direction of robot travel
-  * replit ghostwriter is amazing 
   */
-  @override
-  public Vector2D closestT(Vector2D point){
-    //TODO: add
-    return new Vector2D(0, 0);
+  public double closestT(Vector2D point){
+    double epsilon = 1.0 / 100;
+
+    double closest = Integer.MAX_VALUE;
+    double closestT = 1;
+
+    for(double t = 0; t < 1; t ++){
+      double dist = point.dist(this.point(t));
+
+      if(dist <= closest){
+        closest = dist;
+        closestT = t;
+      }
+    }
+
+    return closestT;
   }
 }

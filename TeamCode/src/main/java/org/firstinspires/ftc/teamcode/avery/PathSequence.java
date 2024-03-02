@@ -1,3 +1,10 @@
+package org.firstinspires.ftc.teamcode.avery;
+
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
+import org.firstinspires.ftc.teamcode.avery.Path;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 class PathSequence {
@@ -5,11 +12,11 @@ class PathSequence {
   
   public ArrayList<Path> paths;
   
-  public int currentPath;
+  public int currentPath = 0;
   public Vector2D start;
 
   public PathSequence(Path[] paths){
-    this.start = paths[0];
+    this.start = paths[0].getStart();
     for(Path path : paths){
       this.paths.add(path);
     }
@@ -32,7 +39,7 @@ class PathSequence {
       start = paths.get(paths.size() - 1).getEnd();
     }
 
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
     output[paths.size()] = new Line(start, end);
     return new PathSequence(output);
   }
@@ -45,7 +52,7 @@ class PathSequence {
       start = paths.get(paths.size() - 1).getEnd();
     }
 
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
     output[paths.size()] = new Line(start, end);
     return new PathSequence(output);
   }
@@ -66,13 +73,13 @@ class PathSequence {
     
     Vector2D end = new Vector2D(x, y);
 
-    vector2D controlPoint1 = 
+    Vector2D controlPoint1 =
       lastEnd.sub(lastStart)
       .normalize()
       .mult(startVelo);
       
     Vector2D controlPoint2 = new Vector2D(cx - x, cy - y);
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
     output[paths.size()] = new Spline(lastEnd, controlPoint1, controlPoint2, end);
     return new PathSequence(output);
   }
@@ -83,13 +90,13 @@ class PathSequence {
     Vector2D lastStart = last.controlPoints[last.controlPoints.length - 2];
 
 
-    vector2D controlPoint1 = 
+    Vector2D controlPoint1 =
       lastEnd.sub(lastStart)
       .normalize()
       .mult(startVelo);
 
     Vector2D controlPoint2 = control.sub(end);
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
     output[paths.size()] = new Spline(lastEnd, controlPoint1, controlPoint2, end);
     return new PathSequence(output);
   }
@@ -99,8 +106,8 @@ class PathSequence {
     control1 = control1.sub(start);
     control2 = control2.sub(end);
 
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
-    output[paths.size()] = new Spline(start, controlPoint1, controlPoint2, end);
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
+    output[paths.size()] = new Spline(start, control1, control2, end);
     return new PathSequence(output);
   }
 
@@ -110,9 +117,25 @@ class PathSequence {
   }
 
   public PathSequence SplineTo(Spline spline){
-    Path[] output = Arrays.copyOf(getPaths, paths.size() + 1);
-    output(paths.size()) = spline.withEnd(controlPoints[controlPoints.length - 1].getEnd());
+    Path[] output = Arrays.copyOf(this.getPaths(), paths.size() + 1);
+    output[paths.size()] = spline.withEnd(paths.get(paths.size() - 1).getEnd());
     return new PathSequence(output);
+  }
+
+  public Pose2d follow(Pose2d robot){
+    Vector2D current = new Vector2D(robot.getX(), robot.getY());
+
+    if(current.dist(paths.get(currentPath).getEnd()) < deadBand){
+      if(currentPath < paths.size() + 2){
+        currentPath ++;
+      }
+      else{
+        return new Pose2d();
+        //TODO: finnish path sequence
+      }
+    }
+    return paths.get(currentPath).vector(robot);
+
   }
   
 }

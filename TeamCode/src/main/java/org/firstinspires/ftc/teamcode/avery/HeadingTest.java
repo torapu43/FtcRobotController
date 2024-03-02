@@ -39,7 +39,7 @@ public class HeadingTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
-        Pose2D follow = path.follow(drive.getPoseEstimate());
+        Pose2d follow = path.follow(drive.getPoseEstimate());
         drive.setWeightedDrivePower(follow);
         telemetry.addData("location", drive.getPoseEstimate());
       }
