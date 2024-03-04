@@ -38,9 +38,9 @@ public class SequenceTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
-        Pose2D est = drive.getPoseEstimate();
-        Vector2D vector = path.vector(est.getX(), est.getY());
-        drive.setWeightedDrivePower(new Pose2D(vector.x, vector.y, 0));
+        Pose2d est = drive.getPoseEstimate();
+        Pose2d follow = path.follow(est);
+        drive.setWeightedDrivePower(follow);
         telemetry.addData("location", drive.getPoseEstimate());
       }
     }

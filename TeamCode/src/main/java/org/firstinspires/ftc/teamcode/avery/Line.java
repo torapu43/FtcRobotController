@@ -9,6 +9,10 @@ public class Line extends Path {
     super(controlPoints);
   }
 
+  public Line(Vector2D start, Vector2D end){
+    super(new Vector2D[]{start, end});
+  }
+
   public Line(){
     super( new Vector2D[2] );
   }
@@ -26,11 +30,15 @@ public class Line extends Path {
   }
 
   public Line withStart(double x, double y){
-    return this.copy().addStart(new Vector2D(x, y));
+    Line output = this.copy();
+    output.addStart(new Vector2D(x, y));
+    return output;
   }
 
   public Line withEnd(double x, double y){
-    return this.copy().addEnd(new Vector2D(x, y));
+    Line output = this.copy();
+    output.addEnd(new Vector2D(x, y));
+    return output;
   }
 
   public Line copy(){

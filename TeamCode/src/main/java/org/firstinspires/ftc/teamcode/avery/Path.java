@@ -1,20 +1,18 @@
 package org.firstinspires.ftc.teamcode.avery;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.firstinspires.ftc.teamcode.avery.Vector2D;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 public class Path {
-  public static final double agressiveness = 0.5;
+  public static final double aggressiveness = 0.5;
   public static final double deccelRadius = 6;
   public static final double Kstatic = 0.014; //pulled from driveConstants.java
 
   private static final int STATIC = 0;
   private static final int FOLLOW_PATH = 1;
   private static final int FOLLOW_PATH_REVERSE = 2;
-  private static final int FOLLOW_PATH_SEPERATE_END = 3;
+  private static final int FOLLOW_PATH_SEPARATE_END = 3;
   
 
   public double endHeading;
@@ -33,7 +31,7 @@ public class Path {
   }
 
   public double headingPID(Pose2d robot, double distance, Vector2D follow){
-    int target;
+    double target = 0;
     switch(headingPID_type){
       case STATIC:{
         target = robot.getHeading();
@@ -47,7 +45,7 @@ public class Path {
         target = follow.mult(-1).getHeading();
         break;
       }
-      case FOLLOW_PATH_SEPERATE_END:{
+      case FOLLOW_PATH_SEPARATE_END:{
         if(distance <= deccelRadius){
           target = endHeading;
         }
@@ -56,18 +54,9 @@ public class Path {
         }
         break;
       }
-      defualt:{
-        break;
-      }
     }
     return (robot.getHeading() - target) * heading_P;
     
-  }
-    
-  }
-
-  public path(Vector2D[] controlPoints){
-    this.controlPoints = controlPoints;
   }
   
   /**
@@ -100,9 +89,9 @@ public class Path {
 
   /** 
   * @param point a vector representing the robot's coorinates
-  * @returns a unit vector representing the direction of robot travel
+  * @returns Vector2D a unit vector representing the direction of robot travel
   */
-  public Vector2D vector(Vector2D point){
+  public Pose2d vector(Pose2d robot, Vector2D point){
     double closestT = closestT(point);
     Vector2D closest = point(closestT);
     Vector2D normal = closest.sub(point);
@@ -112,7 +101,7 @@ public class Path {
       error = derivative(closestT);
     }
     error.normalize();
-    error.mult(agressiveness);
+    error.mult(aggressiveness);
 
     Vector2D output = 
       normal
@@ -127,8 +116,16 @@ public class Path {
         .add(output.mult(Kstatic * (1 - t)));
     }
     
-    return output;
+    return new Pose2d(output.x, output.y, headingPID(robot, dist, output))
     
+  }
+
+  public Pose2d vector(Pose2d robot, double x, double y){
+    return vector(robot, new Vector2D(x, y));
+  }
+
+  public Pose2d vector(Pose2d robot){
+    return vector(robot, new Vector2D(robot.getX(), robot.getY()));
   }
 
 
@@ -144,7 +141,7 @@ public class Path {
       error = derivative(closestT);
     }
     error.normalize();
-    error.mult(agressiveness);
+    error.mult(aggressiveness);
   
     Vector2D output = 
       normal
@@ -165,11 +162,15 @@ public class Path {
 
   public double distance(Vector2D point){
     Vector2D endpoint = getEnd();
-    return Math.sqrt(Math.pow(endpoint.x - point.x, 2) + Math.pow(endpoint.y - point.y, 2));
+    return endpoint.dist(point);
   }
 
   public Vector2D getEnd(){
     return controlPoints[controlPoints.length - 1];
+  }
+
+  public Vector2D getStart(){
+    return controlPoints[0];
   }
 
   public boolean equals(Path other){

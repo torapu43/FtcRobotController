@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.avery;
 
 /**
-* chainable vector class written by replit ghostwriter
 * replit ghostwriter is amazing
 */
 
@@ -32,7 +31,6 @@ class Vector2D{
 
   public double magnitude(){
     return Math.hypot(x, y);
-
   }
 
   public Vector2D normalize(){

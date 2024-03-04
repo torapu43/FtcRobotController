@@ -28,6 +28,10 @@ class Spline extends Path {
     //controlPoints = new Vector2D[4];
   }
 
+  public Spline(Vector2D start, Vector2D cp1, Vector2D cp2, Vector2D end){
+    super(new Vector2D[]{start, cp1, cp1, end});
+  }
+
   public void addStart(Vector2D start){
     this.controlPoints[0] = start;
   }
@@ -41,14 +45,25 @@ class Spline extends Path {
   }
 
   public Spline withStart(double x, double y){
-    return this.withControlPoint(0, x, y);
+    return withStart(new Vector2D(x, y));
+  }
+  public Spline withStart(Vector2D start){
+    Spline output = this.copy();
+    output.addStart(start);
+    return output;
   }
 
   public Spline withEnd(double x, double y){
-    return this.withControlPoint(0, x, y);
+    return withEnd(new Vector2D(x, y));
   }
 
-  public Spline withControlPoint(int index, double x, double y){
+  public Spline withEnd(Vector2D end){
+    Spline output = this.copy();
+    output.addEnd(end);
+    return output;
+  }
+
+  public Spline withControlPoint(int index, int x, int y){
     Spline output = this.copy();
     output.addControlPoint(index, new Vector2D(x, y));
     return output;
@@ -80,22 +95,21 @@ class Spline extends Path {
   /**
   * @param point a vector representing the robot's coorinates
   * @returns a unit vector representing the direction of robot travel
-  * replit ghostwriter is amazing 
   */
-  public double closestT(Vector2D robot){
+  public double closestT(Vector2D point){
     double epsilon = 1.0 / 100;
 
     double closest = Integer.MAX_VALUE;
-    double closestT = 0;
+    double closestT = 1;
 
+    for(double t = 0; t < 1; t ++){
+      double dist = point.dist(this.point(t));
 
-    for(double t = 0; t < 1 + epsilon; t += epsilon){
-      double dist = robot.dist(point(t));
-      if(dist < closest){
+      if(dist <= closest){
         closest = dist;
         closestT = t;
       }
     }
-
+    return closestT;
   }
 }
