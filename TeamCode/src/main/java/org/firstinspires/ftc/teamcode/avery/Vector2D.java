@@ -31,7 +31,7 @@ class Vector2D{
   }
 
   public double magnitude(){
-    return magnitude = Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+    return Math.hypot(x, y);
 
   }
 
@@ -51,6 +51,10 @@ class Vector2D{
 
   public double getHeading(){
     return Math.atan2(this.y, this.x);
+  }
+
+  public double dist(Vector2D other){
+    return Math.sqrt(Math.pow(this.x - other.x, 2) + Math.pow(this.y - other.y, 2));
   }
 
   public Vector2D toUnitVector(){
