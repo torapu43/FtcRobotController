@@ -1,3 +1,6 @@
+package org.firstinspires.ftc.teamcode.avery;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 class PathSequence {
@@ -6,7 +9,7 @@ class PathSequence {
   public ArrayList<Path> paths;
   
   public int currentPath;
-  public Vector2D start;
+  public Path start;
 
   public PathSequence(Path[] paths){
     this.start = paths[0];
@@ -15,12 +18,12 @@ class PathSequence {
     }
   }
 
-  public PathSequence(Vector2D start){
+  public PathSequence(Path start){
     this.start = start;
   }
 
   public PathSequence(double x, double y){
-    this.start = new Vector2D(x, y);
+    this.start = new Line(x, y);
   }
 
   public PathSequence LineTo(double x, double y){

@@ -5,8 +5,8 @@ import org.firstinspires.ftc.teamcode.avery.Vector2D;
 
 class Spline extends Path {
   private Vector2D[] controlPoints;
+  private Vector2D term2;
   private Vector2D term3;
-  private Vector2D term4;
   
   public Spline(Vector2D[] controlPoints){
     super(controlPoints);
@@ -41,28 +41,27 @@ class Spline extends Path {
   }
 
   public Spline withStart(double x, double y){
-    return this.copy().addStart(new Vector2D(x, y));
+    return this.withControlPoint(0, x, y);
   }
 
   public Spline withEnd(double x, double y){
-    return this.copy().addEnd(new Vector2D(x, y));
+    return this.withControlPoint(0, x, y);
   }
 
-  public Spline withControlPoint(int index, int x, int y){
-    return this.copy().addControlPoint(index, new Vector2D(x, y));
+  public Spline withControlPoint(int index, double x, double y){
+    Spline output = this.copy();
+    output.addControlPoint(index, new Vector2D(x, y));
+    return output;
   }
 
   public Spline copy(){
-    return new Line(this.controlPoints.clone());
+    return new Spline(this.controlPoints.clone());
   }
 
   public void addStartVelocity(Vector2D controlPoint){
     this.controlPoints[1] = controlPoint;
   }
 
-  public 
-
-  @override
   public Vector2D point(double t){
     return 
       controlPoints[0]
@@ -71,7 +70,6 @@ class Spline extends Path {
       .add(term3.mult(t * t * t));
   }
 
-  @override
   public Vector2D derivative(double t){
     return 
       controlPoints[1]
@@ -84,9 +82,20 @@ class Spline extends Path {
   * @returns a unit vector representing the direction of robot travel
   * replit ghostwriter is amazing 
   */
-  @override
-  public Vector2D closestT(Vector2D point){
-    //TODO: add
-    return new Vector2D(0, 0);
+  public double closestT(Vector2D robot){
+    double epsilon = 1.0 / 100;
+
+    double closest = Integer.MAX_VALUE;
+    double closestT = 0;
+
+
+    for(double t = 0; t < 1 + epsilon; t += epsilon){
+      double dist = robot.dist(point(t));
+      if(dist < closest){
+        closest = dist;
+        closestT = t;
+      }
+    }
+
   }
 }

@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.avery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.firstinspires.ftc.teamcode.avery.Vector2D;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 
@@ -21,6 +23,14 @@ public class Path {
   public static final double heading_P = 0.1;
   
   public Vector2D[] controlPoints;
+
+  public Path(Vector2D start) {
+    controlPoints = new Vector2D[]{start};
+  }
+
+  public Path(Vector2D[] points) {
+    controlPoints = points;
+  }
 
   public double headingPID(Pose2d robot, double distance, Vector2D follow){
     int target;
@@ -93,16 +103,16 @@ public class Path {
   * @returns a unit vector representing the direction of robot travel
   */
   public Vector2D vector(Vector2D point){
-    Vector2D closestT = closestT(point);
+    double closestT = closestT(point);
     Vector2D closest = point(closestT);
     Vector2D normal = closest.sub(point);
     
-    Vector2D error = newVector2D(0, 0);
+    Vector2D error = new Vector2D(0, 0);
     if(closestT < 1){
       error = derivative(closestT);
     }
     error.normalize();
-    error.mult(aggressiveness);
+    error.mult(agressiveness);
 
     Vector2D output = 
       normal
@@ -110,8 +120,8 @@ public class Path {
       .normalize();
 
     double dist = distance(point);
-    if(dist <= decelRadius){
-      double t = dist / decelRadius;
+    if(dist <= deccelRadius){
+      double t = dist / deccelRadius;
       output = 
         output.mult(t)
         .add(output.mult(Kstatic * (1 - t)));
@@ -125,7 +135,7 @@ public class Path {
   public Pose2d powers(Pose2d robot){
   
     Vector2D point = new Vector2D(robot.getX(), robot.getY());
-    Vector2D closestT = closestT(point);
+    double closestT = closestT(point);
     Vector2D closest = point(closestT);
     Vector2D normal = closest.sub(point);
   
@@ -134,7 +144,7 @@ public class Path {
       error = derivative(closestT);
     }
     error.normalize();
-    error.mult(aggressiveness);
+    error.mult(agressiveness);
   
     Vector2D output = 
       normal
@@ -142,8 +152,8 @@ public class Path {
       .normalize();
   
     double dist = distance(point);
-    if(dist <= decelRadius){
-      double t = dist / decelRadius;
+    if(dist <= deccelRadius){
+      double t = dist / deccelRadius;
       output = 
         output.mult(t)
         .add(output.mult(Kstatic * (1 - t)));
@@ -162,8 +172,8 @@ public class Path {
     return controlPoints[controlPoints.length - 1];
   }
 
-  public boolean equals(path other){
-    return this.controlPoints.equals(other.controlPoints);
+  public boolean equals(Path other){
+    return Arrays.equals(this.controlPoints, other.controlPoints);
   }
   
 }
