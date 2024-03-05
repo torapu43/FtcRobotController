@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.avery;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+
 /**
 * replit ghostwriter is amazing
 */
@@ -13,7 +15,12 @@ class Vector2D{
     this.y = y;
   }
 
-  public Vector2D add(Vector2D other){
+  public Vector2D(Pose2d pose) {
+    this.x = pose.getX();
+    this.y = pose.getY();
+  }
+
+    public Vector2D add(Vector2D other){
     return new Vector2D(this.x + other.x, this.y + other.y);
   }
 
