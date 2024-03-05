@@ -113,7 +113,7 @@ public class Path {
         .add(output.mult(Kstatic * (1 - t)));
     }
     
-    return new Pose2d(output.x, output.y, headingPID(robot, dist, output))
+    return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
     
   }
 
