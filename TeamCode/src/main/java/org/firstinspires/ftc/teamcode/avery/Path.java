@@ -22,6 +22,14 @@ public class Path {
   
   public Vector2D[] controlPoints;
 
+  public Path(Vector2D start) {
+    controlPoints = new Vector2D[]{start};
+  }
+
+  public Path(Vector2D[] points) {
+    controlPoints = points;
+  }
+
   public double headingPID(Pose2d robot, double distance, Vector2D follow){
     double target = 0;
     switch(headingPID_type){
@@ -49,11 +57,6 @@ public class Path {
     }
     return (robot.getHeading() - target) * heading_P;
     
-  }
-
-
-  public Path(Vector2D[] controlPoints){
-    this.controlPoints = controlPoints;
   }
   
   /**

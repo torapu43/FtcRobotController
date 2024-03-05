@@ -17,6 +17,10 @@ public class Line extends Path {
     super( new Vector2D[2] );
   }
 
+  public Line(double x, double y){
+    super(new Vector2D(x, y));
+  }
+
   public void addStart(Vector2D start){
     this.controlPoints[0] = start;
   }

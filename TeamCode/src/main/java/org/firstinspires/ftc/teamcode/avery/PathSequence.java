@@ -11,7 +11,7 @@ class PathSequence {
   public static final double deadBand = 0.1;
   
   public ArrayList<Path> paths;
-  
+
   public int currentPath = 0;
   public Vector2D start;
 

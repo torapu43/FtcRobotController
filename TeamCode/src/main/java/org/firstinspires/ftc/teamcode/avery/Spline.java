@@ -110,7 +110,6 @@ class Spline extends Path {
         closestT = t;
       }
     }
-
     return closestT;
   }
 }
