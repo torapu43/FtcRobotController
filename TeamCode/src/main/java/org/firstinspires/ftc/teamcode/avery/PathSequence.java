@@ -123,18 +123,43 @@ class PathSequence {
   }
 
   public Pose2d follow(Pose2d robot){
-    Vector2D current = new Vector2D(robot.getX(), robot.getY());
+    Vector2D point = new Vector2D(robot);
+    Path current = paths.get(currentPath);
 
-    if(current.dist(paths.get(currentPath).getEnd()) < deadBand){
-      if(currentPath < paths.size() + 2){
+    double closestT = current.closestT(point);
+    Vector2D closest = current.point(closestT);
+    if(closestT > 1){
+      if(currentPath < paths.size() - 2){
         currentPath ++;
       }
       else{
-        return new Pose2d();
-        //TODO: finnish path sequence
+        //TODO: finish path
       }
+      return follow(robot, point);
+    } //switch paths
+    Vector2D normal = closest.sub(point);
+
+    Vector2D error = new Vector2D(0, 0);
+    if(closestT < 1){
+      error = current.derivative(closestT);
     }
-    return paths.get(currentPath).vector(robot);
+    error.normalize();
+    error.mult(current.aggressiveness);
+
+    Vector2D output =
+            normal
+                    .add(error)
+                    .normalize();
+
+    double dist = current.distance(point);
+    if(dist <= current.deccelRadius){
+      double t = dist / current.deccelRadius;
+      output =
+              output.mult(t)
+                      .add(output.mult(current.Kstatic * (1 - t)));
+    }
+
+    return new Pose2d(output.x, output.y, current.headingPID(robot, dist, output));
 
   }
   
