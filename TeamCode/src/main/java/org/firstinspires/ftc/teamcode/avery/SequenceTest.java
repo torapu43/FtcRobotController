@@ -1,30 +1,22 @@
 package org.firstinspires.ftc.teamcode.avery;
 
-import com.acmerobotics.dashboard.message.redux.StopOpMode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
-
-import java.util.ArrayList;
-import java.util.Queue;
 
 @Autonomous
 public class SequenceTest extends LinearOpMode {
 
     //Objects
   SampleMecanumDrive drive;
-  PathSequence path;
+  PathSequence sequence;
 
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
     
-    path = new PathSequence(0, 0)
+    sequence = new PathSequence(0, 0)
       .LineTo(24, 0)
       .SplineTo(new Spline()
                 .withEnd(36, 12)
@@ -39,7 +31,7 @@ public class SequenceTest extends LinearOpMode {
     if(opModeIsActive()){
       while(opModeIsActive()){
         Pose2d est = drive.getPoseEstimate();
-        Pose2d follow = path.follow(est);
+        Pose2d follow = sequence.follow(est);
         drive.setWeightedDrivePower(follow);
         telemetry.addData("location", drive.getPoseEstimate());
       }

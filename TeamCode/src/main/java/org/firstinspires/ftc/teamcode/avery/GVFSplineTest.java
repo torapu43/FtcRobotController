@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 
 
 @Autonomous
-public class SplineTest extends LinearOpMode {
+public class GVFSplineTest extends LinearOpMode {
 
     //Objects
   SampleMecanumDrive drive;
