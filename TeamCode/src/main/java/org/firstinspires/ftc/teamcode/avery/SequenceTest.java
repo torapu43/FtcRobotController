@@ -21,7 +21,9 @@ public class SequenceTest extends LinearOpMode {
       .SplineTo(new Spline()
                 .withEnd(36, 12)
                 .withControlPoint(1, 24, 0)
-                .withControlPoint(2, 36, 12));
+                .withControlPoint(2, 36, 12)
+                .build()
+      );
 
     drive.setPoseEstimate(new Pose2d(0,0,0));
 

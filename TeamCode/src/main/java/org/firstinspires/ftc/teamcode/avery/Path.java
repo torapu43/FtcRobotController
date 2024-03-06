@@ -123,7 +123,6 @@ public class Path {
   public Pose2d vector(Pose2d robot, double x, double y){
     return vector(robot, new Vector2D(x, y));
   }
-
   public Pose2d vector(Pose2d robot){
     return vector(robot, new Vector2D(robot.getX(), robot.getY()));
   }

@@ -135,7 +135,7 @@ class PathSequence {
       else{
         //TODO: finish path
       }
-      return follow(robot, point);
+      return follow(robot);
     } //switch paths
     Vector2D normal = closest.sub(point);
 

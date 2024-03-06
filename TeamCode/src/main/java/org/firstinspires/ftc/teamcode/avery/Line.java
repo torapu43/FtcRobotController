@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.avery;
 import org.firstinspires.ftc.teamcode.avery.Path;
 
 public class Line extends Path {
-  private Vector2D[] controlPoints;
-
+  private Vector2D[] controlPoints = new Vector2D[2];
   public Line(Vector2D[] controlPoints){
     super(controlPoints);
   }
