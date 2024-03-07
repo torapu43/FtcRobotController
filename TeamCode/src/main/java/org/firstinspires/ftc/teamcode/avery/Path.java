@@ -88,66 +88,27 @@ public class Path {
   }
 
   /** 
-  * @param point a vector representing the robot's coorinates
-  * @returns Vector2D a unit vector representing the direction of robot travel
+  * @param robot a pose representing the robot
+  * @returns Pose2d a unit pose representing the direction of robot travel and heading change
   */
-  public Pose2d vector(Pose2d robot, Vector2D point){
-    double closestT = closestT(point);
-    Vector2D closest = point(closestT);
-    Vector2D normal = closest.sub(point);
-    
-    Vector2D error = new Vector2D(0, 0);
-    if(closestT < 1){
-      error = derivative(closestT);
-    }
-    error.normalize();
-    error.mult(aggressiveness);
-
-    Vector2D output = 
-      normal
-      .add(error)
-      .normalize();
-
-    double dist = distance(point);
-    if(dist <= deccelRadius){
-      double t = dist / deccelRadius;
-      output = 
-        output.mult(t)
-        .add(output.mult(Kstatic * (1 - t)));
-    }
-    
-    return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
-    
-  }
-
-  public Pose2d vector(Pose2d robot, double x, double y){
-    return vector(robot, new Vector2D(x, y));
-  }
-
   public Pose2d vector(Pose2d robot){
-    return vector(robot, new Vector2D(robot.getX(), robot.getY()));
-  }
-
-
-  public Pose2d powers(Pose2d robot){
-  
-    Vector2D point = new Vector2D(robot.getX(), robot.getY());
+    Vector2D point = new Vector2D(robot);
     double closestT = closestT(point);
     Vector2D closest = point(closestT);
     Vector2D normal = closest.sub(point);
-  
+    
     Vector2D error = new Vector2D(0, 0);
     if(closestT < 1){
       error = derivative(closestT);
     }
     error.normalize();
     error.mult(aggressiveness);
-  
+
     Vector2D output = 
       normal
       .add(error)
       .normalize();
-  
+
     double dist = distance(point);
     if(dist <= deccelRadius){
       double t = dist / deccelRadius;
@@ -155,10 +116,42 @@ public class Path {
         output.mult(t)
         .add(output.mult(Kstatic * (1 - t)));
     }
-  
+    
     return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
-  
+    
   }
+
+
+//  public Pose2d powers(Pose2d robot){
+//
+//    Vector2D point = new Vector2D(robot.getX(), robot.getY());
+//    double closestT = closestT(point);
+//    Vector2D closest = point(closestT);
+//    Vector2D normal = closest.sub(point);
+//
+//    Vector2D error = new Vector2D(0, 0);
+//    if(closestT < 1){
+//      error = derivative(closestT);
+//    }
+//    error.normalize();
+//    error.mult(aggressiveness);
+//
+//    Vector2D output =
+//      normal
+//      .add(error)
+//      .normalize();
+//
+//    double dist = distance(point);
+//    if(dist <= deccelRadius){
+//      double t = dist / deccelRadius;
+//      output =
+//        output.mult(t)
+//        .add(output.mult(Kstatic * (1 - t)));
+//    }
+//
+//    return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
+//
+//  }
 
   public double distance(Vector2D point){
     Vector2D endpoint = getEnd();
