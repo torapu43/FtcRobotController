@@ -315,8 +315,5 @@ public class SampleMecanumDrive extends MecanumDrive {
         return new ProfileAccelerationConstraint(maxAccel);
     }
 
-    public static Pose2d getPoseEstimate(){
-      return getPoseEstimate();
-    }
 
 }

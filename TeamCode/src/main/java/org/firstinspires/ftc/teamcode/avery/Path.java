@@ -121,38 +121,6 @@ public class Path {
     
   }
 
-
-//  public Pose2d powers(Pose2d robot){
-//
-//    Vector2D point = new Vector2D(robot.getX(), robot.getY());
-//    double closestT = closestT(point);
-//    Vector2D closest = point(closestT);
-//    Vector2D normal = closest.sub(point);
-//
-//    Vector2D error = new Vector2D(0, 0);
-//    if(closestT < 1){
-//      error = derivative(closestT);
-//    }
-//    error.normalize();
-//    error.mult(aggressiveness);
-//
-//    Vector2D output =
-//      normal
-//      .add(error)
-//      .normalize();
-//
-//    double dist = distance(point);
-//    if(dist <= deccelRadius){
-//      double t = dist / deccelRadius;
-//      output =
-//        output.mult(t)
-//        .add(output.mult(Kstatic * (1 - t)));
-//    }
-//
-//    return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
-//
-//  }
-
   public double distance(Vector2D point){
     Vector2D endpoint = getEnd();
     return endpoint.dist(point);
