@@ -6,7 +6,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 * replit ghostwriter is amazing
 */
 
-class Vector2D{
+public class Vector2D{
   public double x;
   public double y;
 

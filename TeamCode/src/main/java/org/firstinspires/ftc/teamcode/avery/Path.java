@@ -17,7 +17,7 @@ public class Path {
 
   public double endHeading;
 
-  public int headingPID_type;
+  public int headingPID_type = 1;
   public static final double heading_P = 0.1;
   
   public Vector2D[] controlPoints;
@@ -119,6 +119,11 @@ public class Path {
     
     return new Pose2d(output.x, output.y, headingPID(robot, dist, output));
     
+  }
+
+
+  public Vector2D[] getControlPoints() {
+    return controlPoints;
   }
 
   public double distance(Vector2D point){

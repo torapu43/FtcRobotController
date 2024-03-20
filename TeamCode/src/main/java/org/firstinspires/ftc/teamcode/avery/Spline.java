@@ -71,6 +71,18 @@ class Spline extends Path {
   }
 
   public Vector2D point(double t){
+    controlPoints = getControlPoints();
+    term2 =
+            controlPoints[0].mult(-1)
+                    .add(controlPoints[1].mult(-2))
+                    .add(controlPoints[2].mult(3))
+                    .add(controlPoints[3].mult(-1));
+
+    term3 =
+            controlPoints[0].mult(2)
+                    .add(controlPoints[1].mult(1))
+                    .add(controlPoints[2].mult(-2))
+                    .add(controlPoints[3].mult(1));
     return
       controlPoints[0]
       .add(controlPoints[1].mult(t))
@@ -79,6 +91,18 @@ class Spline extends Path {
   }
 
   public Vector2D derivative(double t){
+    controlPoints = getControlPoints();
+    term2 =
+            controlPoints[0].mult(-1)
+                    .add(controlPoints[1].mult(-2))
+                    .add(controlPoints[2].mult(3))
+                    .add(controlPoints[3].mult(-1));
+
+    term3 =
+            controlPoints[0].mult(2)
+                    .add(controlPoints[1].mult(1))
+                    .add(controlPoints[2].mult(-2))
+                    .add(controlPoints[3].mult(1));
     return 
       controlPoints[1]
       .add(term2.mult(2 * t))

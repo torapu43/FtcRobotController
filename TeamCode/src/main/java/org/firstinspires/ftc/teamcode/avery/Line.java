@@ -58,6 +58,7 @@ public class Line extends Path {
   * replit ghostwriter is amazing 
   */
   public double closestT(Vector2D point){
+    controlPoints = getControlPoints();
     double l1 = Math.sqrt(Math.pow(point.x - controlPoints[0].x, 2) + Math.pow(point.y - controlPoints[0].y, 2));
     double alpha = Math.atan2(point.y - controlPoints[0].y, point.x - controlPoints[0].x) - Math.atan2(controlPoints[1].y - controlPoints[0].y, controlPoints[1].x - controlPoints[0].x);
     double beta = Math.PI / 2 - alpha;

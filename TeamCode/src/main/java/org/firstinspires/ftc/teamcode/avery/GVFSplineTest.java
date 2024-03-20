@@ -15,12 +15,12 @@ public class GVFSplineTest extends LinearOpMode {
 
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
-    path = new Spline()
-      .withStart(0, 0)
-      .withEnd(24, 24)
-      .withControlPoint(1, 0, 10)
-      .withControlPoint(2, 30, 30)
-      .build();
+    path = new Spline(
+      new Vector2D(0, 0),
+      new Vector2D(0, 10),
+      new Vector2D(30, 30),
+      new Vector2D(24, 24)
+      );
 
     while(opModeInInit()){
       drive.setPoseEstimate(new Pose2d(0,0,0));

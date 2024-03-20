@@ -10,7 +10,7 @@ import java.util.Arrays;
 class PathSequence {
   public static final double deadBand = 0.1;
   
-  public ArrayList<Path> paths;
+  public ArrayList<Path> paths = new ArrayList<>();
 
   public int currentPath = 0;
   public Vector2D start;
@@ -128,7 +128,7 @@ class PathSequence {
 
     double closestT = current.closestT(point);
     Vector2D closest = current.point(closestT);
-    if(closestT > 1){
+    if(closestT >= 0.95){
       if(currentPath < paths.size() - 2){
         currentPath ++;
       }

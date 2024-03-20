@@ -23,9 +23,15 @@ public class FollowerTest extends LinearOpMode {
 
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
-    path = new Line()
-      .withStart(0, 0)
-      .withEnd(24, 24);
+//    path = new Line()
+//      .withStart(0, 0)
+//      .withEnd(24, 24);
+    path = new Line(
+            new Vector2D(0, 0),
+            new Vector2D(24, 24)
+    );
+    telemetry.addData("line", path.getControlPoints()[0].x);
+    telemetry.update();
 
     while(opModeInInit()){
       drive.setPoseEstimate(new Pose2d(0,0,0));
@@ -34,10 +40,16 @@ public class FollowerTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
+        drive.update();
+
+        telemetry.addData("line", path.getControlPoints()[0].x);
+        telemetry.addData("location", drive.getPoseEstimate());
+        telemetry.update();
+        
         Pose2d est = drive.getPoseEstimate();
         Pose2d follow = path.vector(est);
         drive.setWeightedDrivePower(follow);
-        telemetry.addData("location", drive.getPoseEstimate());
+
       }
     }
 

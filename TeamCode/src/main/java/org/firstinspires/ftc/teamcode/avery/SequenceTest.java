@@ -16,14 +16,7 @@ public class SequenceTest extends LinearOpMode {
   public void runOpMode(){
     drive = new SampleMecanumDrive(hardwareMap);
     
-    sequence = new PathSequence(0, 0)
-      .LineTo(24, 0)
-      .SplineTo(new Spline()
-                .withEnd(36, 12)
-                .withControlPoint(1, 24, 0)
-                .withControlPoint(2, 36, 12)
-                .build()
-      );
+    sequence = new PathSequence(new Path[] {new Line(new Vector2D(0, 0),new Vector2D(24, 0)), new Spline(new Vector2D(24, 0),new Vector2D(24, 0),new Vector2D(36, 24), new Vector2D(36, 12))});
 
     drive.setPoseEstimate(new Pose2d(0,0,0));
 
@@ -32,10 +25,12 @@ public class SequenceTest extends LinearOpMode {
     waitForStart();
     if(opModeIsActive()){
       while(opModeIsActive()){
+        drive.update();
         Pose2d est = drive.getPoseEstimate();
         Pose2d follow = sequence.follow(est);
         drive.setWeightedDrivePower(follow);
         telemetry.addData("location", drive.getPoseEstimate());
+        telemetry.update();
       }
     }
 
